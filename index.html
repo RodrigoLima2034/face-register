@@ -1235,7 +1235,7 @@
 /*
    SENHA DA ADMINISTRAÇÃO
 
-   ALTERE PARA A SUA SENHA.
+   ALTERE AQUI.
 */
 
 const ADMIN_PASSWORD =
@@ -1256,7 +1256,7 @@ const FACE_THRESHOLD =
 
 
 /*
-   MODELOS FACE API
+   MODELOS FACIAIS
 */
 
 const MODEL_URL =
@@ -1269,11 +1269,11 @@ const MODEL_URL =
 */
 
 const EMPLOYEE_STORAGE =
-    "PONTO_FACIAL_FUNCIONARIOS_V8";
+    "PONTO_FACIAL_FUNCIONARIOS_V9";
 
 
 const RECORD_STORAGE =
-    "PONTO_FACIAL_REGISTROS_V8";
+    "PONTO_FACIAL_REGISTROS_V9";
 
 
 
@@ -2006,7 +2006,7 @@ async function captureFace(
 
 
         await sleep(
-            350
+            300
         );
 
     }
@@ -2255,7 +2255,7 @@ function playTone(
 
     gain.gain.exponentialRampToValueAtTime(
         volume,
-        startTime + 0.025
+        startTime + 0.015
     );
 
 
@@ -2263,7 +2263,7 @@ function playTone(
         volume,
         startTime +
         duration -
-        0.10
+        0.04
     );
 
 
@@ -2314,7 +2314,7 @@ function successSound() {
 
     playTone(
         659.25,
-        0.25,
+        0.18,
         start,
         0.22,
         "sine"
@@ -2323,8 +2323,8 @@ function successSound() {
 
     playTone(
         783.99,
-        0.32,
-        start + 0.14,
+        0.22,
+        start + 0.10,
         0.25,
         "sine"
     );
@@ -2332,19 +2332,10 @@ function successSound() {
 
     playTone(
         1046.50,
-        0.60,
-        start + 0.35,
+        0.38,
+        start + 0.22,
         0.28,
         "sine"
-    );
-
-
-    playTone(
-        1318.51,
-        0.25,
-        start + 0.43,
-        0.08,
-        "triangle"
     );
 
 }
@@ -2352,7 +2343,7 @@ function successSound() {
 
 
 /* ============================================================
-   🔊 SOM DO ADMIN
+   🔊 SOM ADMIN
 ============================================================ */
 
 function adminSound() {
@@ -2367,7 +2358,7 @@ function adminSound() {
 
     playTone(
         523.25,
-        0.20,
+        0.14,
         start,
         0.16
     );
@@ -2375,16 +2366,16 @@ function adminSound() {
 
     playTone(
         659.25,
-        0.26,
-        start + 0.12,
+        0.18,
+        start + 0.10,
         0.18
     );
 
 
     playTone(
         783.99,
-        0.40,
-        start + 0.25,
+        0.28,
+        start + 0.20,
         0.20
     );
 
@@ -2393,16 +2384,19 @@ function adminSound() {
 
 
 /* ============================================================
-   🔊 SOM DE NÃO DETECTADO
+   🔊🔊🔊 SOM DE NÃO DETECTADO
 ============================================================ */
 
 /*
-    ESTE É O SOM QUE VOCÊ PEDIU.
+   MESMA ALTURA DO ANTERIOR,
+   MAS AGORA MUITO MAIS CURTO.
 
-    MAIS ALTO
-    MAIS GRAVE
-    MAIS LONGO
-    3 AVISOS
+   SOM:
+
+   BEEP-BEEP-BEEP
+
+   Duração aproximada:
+   0.75 segundo
 */
 
 function errorSound() {
@@ -2421,7 +2415,7 @@ function errorSound() {
 
     playTone(
         180,
-        0.45,
+        0.22,
         start,
         0.50,
         "sawtooth"
@@ -2434,8 +2428,8 @@ function errorSound() {
 
     playTone(
         140,
-        0.65,
-        start + 0.40,
+        0.25,
+        start + 0.24,
         0.55,
         "sawtooth"
     );
@@ -2447,23 +2441,10 @@ function errorSound() {
 
     playTone(
         110,
-        0.85,
-        start + 0.95,
+        0.30,
+        start + 0.52,
         0.60,
         "sawtooth"
-    );
-
-
-    /*
-       QUARTO TOM DE ALERTA
-    */
-
-    playTone(
-        90,
-        0.95,
-        start + 1.65,
-        0.55,
-        "triangle"
     );
 
 }
@@ -2471,7 +2452,7 @@ function errorSound() {
 
 
 /* ============================================================
-   SOM DE PROCESSAMENTO
+   SOM PROCESSANDO
 ============================================================ */
 
 function processingSound() {
@@ -2486,7 +2467,7 @@ function processingSound() {
 
     playTone(
         440,
-        0.10,
+        0.08,
         start,
         0.08,
         "triangle"
@@ -2495,8 +2476,8 @@ function processingSound() {
 
     playTone(
         554.37,
-        0.10,
-        start + 0.13,
+        0.08,
+        start + 0.10,
         0.08,
         "triangle"
     );
@@ -2582,7 +2563,7 @@ async function registerPoint() {
     try {
 
         await sleep(
-            400
+            300
         );
 
 
@@ -2595,10 +2576,6 @@ async function registerPoint() {
         if (
             !detection
         ) {
-
-            /*
-             * SOM ALTO
-             */
 
             errorSound();
 
@@ -2731,10 +2708,6 @@ async function registerPoint() {
         );
 
 
-        /*
-         * SOM BONITO
-         */
-
         successSound();
 
 
@@ -2803,7 +2776,7 @@ async function registerPoint() {
     finally {
 
         await sleep(
-            1500
+            1000
         );
 
 
@@ -3147,7 +3120,7 @@ async function registerEmployee() {
 
 
             await sleep(
-                1000
+                900
             );
 
 
@@ -4282,7 +4255,7 @@ function escapeHtml(
 
 
 /* ============================================================
-   MONITORAMENTO
+   MONITORAMENTO DO ROSTO
 ============================================================ */
 
 let lastCheck =
