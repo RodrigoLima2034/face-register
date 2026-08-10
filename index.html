@@ -2,24 +2,42 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <meta name="theme-color"
-          content="#020617">
+    <meta
+        name="theme-color"
+        content="#020617"
+    >
 
     <title>Ponto Facial</title>
 
-    <!-- Tailwind -->
+
+    <!-- =====================================================
+         TAILWIND
+    ====================================================== -->
+
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Face API -->
+
+    <!-- =====================================================
+         FACE API
+    ====================================================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
-    <!-- PDF -->
+
+    <!-- =====================================================
+         PDF
+    ====================================================== -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
     <style>
 
@@ -27,8 +45,17 @@
             box-sizing: border-box;
         }
 
+
+        html,
         body {
             margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+
+        body {
+
             font-family:
                 Inter,
                 system-ui,
@@ -36,104 +63,192 @@
                 BlinkMacSystemFont,
                 "Segoe UI",
                 sans-serif;
+
         }
+
 
         video {
-            transform: scaleX(-1);
+
+            transform:
+                scaleX(-1);
+
         }
 
+
         .scanner-line {
-            animation: scanner 2s ease-in-out infinite;
+
+            animation:
+                scanner 2s
+                ease-in-out
+                infinite;
+
         }
+
 
         @keyframes scanner {
 
             0% {
+
                 top: 8%;
                 opacity: 0;
+
             }
 
             20% {
+
                 opacity: 1;
+
             }
 
             50% {
+
                 top: 92%;
                 opacity: 1;
+
             }
 
             80% {
+
                 opacity: 1;
+
             }
 
             100% {
+
                 top: 8%;
                 opacity: 0;
+
             }
+
         }
 
+
+        .pulse-success {
+
+            animation:
+                successPulse 0.8s
+                ease-in-out
+                2;
+
+        }
+
+
+        @keyframes successPulse {
+
+            0% {
+
+                transform:
+                    scale(1);
+
+            }
+
+            50% {
+
+                transform:
+                    scale(1.03);
+
+            }
+
+            100% {
+
+                transform:
+                    scale(1);
+
+            }
+
+        }
+
+
     </style>
+
 </head>
 
 
-<body class="bg-slate-950 text-white min-h-screen flex flex-col">
+<body
+    class="
+        bg-slate-950
+        text-white
+        min-h-screen
+        flex
+        flex-col
+    "
+>
 
 
 <!-- =========================================================
      HEADER
 ========================================================= -->
 
-<header class="
-    sticky
-    top-0
-    z-50
-    border-b
-    border-slate-800
-    bg-slate-950/90
-    backdrop-blur-xl
-">
+<header
+    class="
+        sticky
+        top-0
+        z-50
+        border-b
+        border-slate-800
+        bg-slate-950/90
+        backdrop-blur-xl
+    "
+>
 
-    <div class="
-        max-w-5xl
-        mx-auto
-        px-4
-        py-4
-        flex
-        items-center
-        justify-between
-    ">
+    <div
+        class="
+            max-w-5xl
+            mx-auto
+            px-4
+            py-4
+            flex
+            items-center
+            justify-between
+        "
+    >
 
-        <div class="flex items-center gap-3">
+        <div
+            class="
+                flex
+                items-center
+                gap-3
+            "
+        >
 
-            <div class="
-                w-3
-                h-3
-                rounded-full
-                bg-emerald-400
-                animate-pulse
-            "></div>
+            <div
+                class="
+                    w-3
+                    h-3
+                    rounded-full
+                    bg-emerald-400
+                    animate-pulse
+                "
+            ></div>
+
 
             <div>
 
-                <div class="
-                    font-bold
-                    tracking-widest
-                    text-emerald-400
-                ">
+                <div
+                    class="
+                        font-bold
+                        tracking-widest
+                        text-emerald-400
+                    "
+                >
                     PONTO FACIAL
                 </div>
 
-                <div class="
-                    text-[10px]
-                    text-slate-500
-                    tracking-widest
-                ">
+
+                <div
+                    class="
+                        text-[10px]
+                        text-slate-500
+                        tracking-widest
+                    "
+                >
                     RECONHECIMENTO LOCAL
                 </div>
 
             </div>
 
         </div>
+
 
         <div
             id="clock"
@@ -151,44 +266,55 @@
 </header>
 
 
+
 <!-- =========================================================
-     MAIN
+     CONTEÚDO PRINCIPAL
 ========================================================= -->
 
-<main class="
-    flex-1
-    w-full
-    max-w-md
-    mx-auto
-    px-4
-    py-8
-">
+<main
+    class="
+        flex-1
+        w-full
+        max-w-md
+        mx-auto
+        px-4
+        py-8
+    "
+>
 
-    <section class="
-        bg-slate-900/70
-        border
-        border-slate-800
-        rounded-3xl
-        p-5
-        shadow-2xl
-    ">
+    <section
+        id="main-card"
+        class="
+            bg-slate-900/70
+            border
+            border-slate-800
+            rounded-3xl
+            p-5
+            shadow-2xl
+        "
+    >
 
 
-        <!-- STATUS -->
+        <!-- STATUS DA CÂMERA -->
 
-        <div class="
-            flex
-            items-center
-            justify-between
-            mb-4
-            text-[10px]
-            font-mono
-            tracking-widest
-        ">
+        <div
+            class="
+                flex
+                items-center
+                justify-between
+                mb-4
+                text-[10px]
+                font-mono
+                tracking-widest
+            "
+        >
 
-            <span class="text-slate-500">
+            <span
+                class="text-slate-500"
+            >
                 TERMINAL 01
             </span>
+
 
             <span
                 id="camera-status"
@@ -200,20 +326,23 @@
         </div>
 
 
-        <!-- =====================================================
-             CAMERA
-        ====================================================== -->
 
-        <div class="
-            relative
-            w-full
-            aspect-[4/3]
-            bg-black
-            rounded-2xl
-            overflow-hidden
-            border
-            border-slate-700
-        ">
+        <!-- =================================================
+             CÂMERA
+        ================================================== -->
+
+        <div
+            class="
+                relative
+                w-full
+                aspect-[4/3]
+                bg-black
+                rounded-2xl
+                overflow-hidden
+                border
+                border-slate-700
+            "
+        >
 
             <video
                 id="video"
@@ -230,56 +359,73 @@
             ></video>
 
 
-            <div class="
-                absolute
-                inset-5
-                pointer-events-none
-            ">
+            <!-- MOLDURA -->
 
-                <div class="
+            <div
+                class="
                     absolute
-                    top-0
-                    left-0
-                    w-8
-                    h-8
-                    border-t-2
-                    border-l-2
-                    border-emerald-400
-                "></div>
+                    inset-5
+                    pointer-events-none
+                "
+            >
 
-                <div class="
-                    absolute
-                    top-0
-                    right-0
-                    w-8
-                    h-8
-                    border-t-2
-                    border-r-2
-                    border-emerald-400
-                "></div>
+                <div
+                    class="
+                        absolute
+                        top-0
+                        left-0
+                        w-8
+                        h-8
+                        border-t-2
+                        border-l-2
+                        border-emerald-400
+                    "
+                ></div>
 
-                <div class="
-                    absolute
-                    bottom-0
-                    left-0
-                    w-8
-                    h-8
-                    border-b-2
-                    border-l-2
-                    border-emerald-400
-                "></div>
 
-                <div class="
-                    absolute
-                    bottom-0
-                    right-0
-                    w-8
-                    h-8
-                    border-b-2
-                    border-r-2
-                    border-emerald-400
-                "></div>
+                <div
+                    class="
+                        absolute
+                        top-0
+                        right-0
+                        w-8
+                        h-8
+                        border-t-2
+                        border-r-2
+                        border-emerald-400
+                    "
+                ></div>
 
+
+                <div
+                    class="
+                        absolute
+                        bottom-0
+                        left-0
+                        w-8
+                        h-8
+                        border-b-2
+                        border-l-2
+                        border-emerald-400
+                    "
+                ></div>
+
+
+                <div
+                    class="
+                        absolute
+                        bottom-0
+                        right-0
+                        w-8
+                        h-8
+                        border-b-2
+                        border-r-2
+                        border-emerald-400
+                    "
+                ></div>
+
+
+                <!-- LINHA SCANNER -->
 
                 <div
                     id="scanner"
@@ -290,11 +436,13 @@
                         right-[5%]
                         h-px
                         bg-emerald-400
-                        shadow-[0_0_12px_rgba(52,211,153,.9)]
+                        shadow-[0_0_15px_rgba(52,211,153,.9)]
                         scanner-line
                     "
                 ></div>
 
+
+                <!-- INDICADOR -->
 
                 <div
                     id="face-indicator"
@@ -319,6 +467,8 @@
             </div>
 
 
+            <!-- ERRO DA CÂMERA -->
+
             <div
                 id="camera-error"
                 class="
@@ -335,13 +485,16 @@
 
                 <div>
 
-                    <div class="
-                        text-rose-400
-                        text-3xl
-                        mb-3
-                    ">
+                    <div
+                        class="
+                            text-rose-400
+                            text-3xl
+                            mb-3
+                        "
+                    >
                         ⚠
                     </div>
+
 
                     <p
                         id="camera-error-text"
@@ -353,6 +506,7 @@
                     >
                         Não foi possível acessar a câmera.
                     </p>
+
 
                     <button
                         id="btn-camera-retry"
@@ -375,19 +529,35 @@
         </div>
 
 
-        <!-- INSTRUÇÃO -->
 
-        <div class="text-center mt-6">
+        <!-- =================================================
+             INSTRUÇÕES
+        ================================================== -->
 
-            <h1 class="text-xl font-bold">
+        <div
+            class="
+                text-center
+                mt-6
+            "
+        >
+
+            <h1
+                class="
+                    text-xl
+                    font-bold
+                "
+            >
                 Registro de Presença
             </h1>
 
-            <p class="
-                text-sm
-                text-slate-500
-                mt-2
-            ">
+
+            <p
+                class="
+                    text-sm
+                    text-slate-500
+                    mt-2
+                "
+            >
                 Olhe diretamente para a câmera.
                 Mantenha o rosto iluminado.
             </p>
@@ -395,18 +565,26 @@
         </div>
 
 
-        <!-- TIPO -->
 
-        <div class="mt-6">
+        <!-- =================================================
+             TIPO DE PONTO
+        ================================================== -->
 
-            <label class="
-                block
-                text-xs
-                text-slate-500
-                mb-2
-            ">
+        <div
+            class="mt-6"
+        >
+
+            <label
+                class="
+                    block
+                    text-xs
+                    text-slate-500
+                    mb-2
+                "
+            >
                 TIPO DE REGISTRO
             </label>
+
 
             <select
                 id="tipo-ponto"
@@ -444,7 +622,10 @@
         </div>
 
 
-        <!-- BOTÃO -->
+
+        <!-- =================================================
+             BOTÃO
+        ================================================== -->
 
         <button
             id="btn-capture"
@@ -468,29 +649,51 @@
         </button>
 
 
-        <!-- STATUS -->
+
+        <!-- =================================================
+             STATUS
+        ================================================== -->
 
         <div
             id="status-box"
-            class="hidden mt-4 p-4 rounded-xl text-center text-sm"
+            class="
+                hidden
+                mt-4
+                p-4
+                rounded-xl
+                text-center
+                text-sm
+            "
         >
-            <span id="status-text"></span>
+
+            <span
+                id="status-text"
+            ></span>
+
         </div>
 
 
-        <!-- LOG -->
 
-        <div class="mt-6">
+        <!-- =================================================
+             LOG
+        ================================================== -->
 
-            <div class="
-                text-[10px]
-                font-mono
-                text-slate-600
-                mb-2
-                tracking-widest
-            ">
+        <div
+            class="mt-6"
+        >
+
+            <div
+                class="
+                    text-[10px]
+                    font-mono
+                    text-slate-600
+                    mb-2
+                    tracking-widest
+                "
+            >
                 SISTEMA
             </div>
+
 
             <div
                 id="system-log"
@@ -511,7 +714,10 @@
         </div>
 
 
-        <!-- ADMIN -->
+
+        <!-- =================================================
+             ADMIN
+        ================================================== -->
 
         <button
             id="btn-admin"
@@ -536,15 +742,24 @@
 </main>
 
 
-<footer class="
-    text-center
-    py-4
-    text-xs
-    text-slate-600
-    border-t
-    border-slate-800
-">
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer
+    class="
+        text-center
+        py-4
+        text-xs
+        text-slate-600
+        border-t
+        border-slate-800
+    "
+>
+
     © 2026 Sistema Integrado de Recursos Humanos
+
 </footer>
 
 
@@ -568,31 +783,43 @@
     "
 >
 
-    <div class="
-        w-full
-        max-w-sm
-        bg-slate-900
-        border
-        border-slate-700
-        rounded-3xl
-        p-6
-    ">
+    <div
+        class="
+            w-full
+            max-w-sm
+            bg-slate-900
+            border
+            border-slate-700
+            rounded-3xl
+            p-6
+        "
+    >
 
-        <div class="text-center">
+        <div
+            class="text-center"
+        >
 
-            <div class="text-4xl mb-3">
+            <div
+                class="text-4xl mb-3"
+            >
                 🔐
             </div>
 
-            <h2 class="text-xl font-bold">
+
+            <h2
+                class="text-xl font-bold"
+            >
                 Área Administrativa
             </h2>
 
-            <p class="
-                text-sm
-                text-slate-500
-                mt-2
-            ">
+
+            <p
+                class="
+                    text-sm
+                    text-slate-500
+                    mt-2
+                "
+            >
                 Digite a senha para continuar.
             </p>
 
@@ -668,7 +895,7 @@
 
 
 <!-- =========================================================
-     ADMIN
+     MODAL ADMIN
 ========================================================= -->
 
 <div
@@ -686,40 +913,53 @@
     "
 >
 
-    <div class="
-        w-full
-        max-w-lg
-        max-h-[90vh]
-        overflow-auto
-        bg-slate-900
-        border
-        border-slate-700
-        rounded-3xl
-        p-6
-    ">
+    <div
+        class="
+            w-full
+            max-w-lg
+            max-h-[90vh]
+            overflow-auto
+            bg-slate-900
+            border
+            border-slate-700
+            rounded-3xl
+            p-6
+        "
+    >
 
-        <div class="
-            flex
-            justify-between
-            items-center
-            mb-6
-        ">
+
+        <!-- CABEÇALHO -->
+
+        <div
+            class="
+                flex
+                justify-between
+                items-center
+                mb-6
+            "
+        >
 
             <div>
 
-                <h2 class="text-xl font-bold">
+                <h2
+                    class="text-xl font-bold"
+                >
                     Administração
                 </h2>
 
-                <p class="
-                    text-xs
-                    text-slate-500
-                    mt-1
-                ">
+
+                <p
+                    class="
+                        text-xs
+                        text-slate-500
+                        mt-1
+                    "
+                >
                     Cadastro e registros
                 </p>
 
             </div>
+
 
             <button
                 id="btn-close-admin"
@@ -735,19 +975,26 @@
         </div>
 
 
-        <!-- CADASTRO -->
 
-        <div class="
-            border
-            border-slate-800
-            rounded-2xl
-            p-4
-        ">
+        <!-- =================================================
+             CADASTRO
+        ================================================== -->
 
-            <h3 class="
-                font-semibold
-                mb-4
-            ">
+        <div
+            class="
+                border
+                border-slate-800
+                rounded-2xl
+                p-4
+            "
+        >
+
+            <h3
+                class="
+                    font-semibold
+                    mb-4
+                "
+            >
                 Cadastrar funcionário
             </h3>
 
@@ -788,12 +1035,14 @@
             >
 
 
-            <p class="
-                text-xs
-                text-slate-500
-                mb-4
-            ">
-                O sistema fará 5 capturas do rosto
+            <p
+                class="
+                    text-xs
+                    text-slate-500
+                    mb-4
+                "
+            >
+                Serão feitas 5 capturas do rosto
                 para melhorar o reconhecimento.
             </p>
 
@@ -829,24 +1078,37 @@
         </div>
 
 
-        <!-- FUNCIONÁRIOS -->
 
-        <div class="mt-6">
+        <!-- =================================================
+             FUNCIONÁRIOS
+        ================================================== -->
 
-            <div class="
-                flex
-                justify-between
-                items-center
-                mb-3
-            ">
+        <div
+            class="mt-6"
+        >
 
-                <h3 class="font-semibold">
+            <div
+                class="
+                    flex
+                    justify-between
+                    items-center
+                    mb-3
+                "
+            >
+
+                <h3
+                    class="font-semibold"
+                >
                     Funcionários
                 </h3>
 
+
                 <span
                     id="employee-count"
-                    class="text-xs text-slate-500"
+                    class="
+                        text-xs
+                        text-slate-500
+                    "
                 >
                     0
                 </span>
@@ -862,18 +1124,27 @@
         </div>
 
 
-        <!-- REGISTROS -->
 
-        <div class="mt-6">
+        <!-- =================================================
+             REGISTROS
+        ================================================== -->
 
-            <div class="
-                flex
-                justify-between
-                items-center
-                mb-3
-            ">
+        <div
+            class="mt-6"
+        >
 
-                <h3 class="font-semibold">
+            <div
+                class="
+                    flex
+                    justify-between
+                    items-center
+                    mb-3
+                "
+            >
+
+                <h3
+                    class="font-semibold"
+                >
                     Registros
                 </h3>
 
@@ -892,15 +1163,20 @@
         </div>
 
 
-        <!-- PDF -->
 
-        <div class="
-            mt-5
-            grid
-            grid-cols-1
-            sm:grid-cols-2
-            gap-2
-        ">
+        <!-- =================================================
+             PDF
+        ================================================== -->
+
+        <div
+            class="
+                mt-5
+                grid
+                grid-cols-1
+                sm:grid-cols-2
+                gap-2
+            "
+        >
 
             <button
                 id="btn-pdf"
@@ -933,6 +1209,7 @@
         </div>
 
 
+
         <!-- CSV -->
 
         <button
@@ -951,7 +1228,8 @@
         </button>
 
 
-        <!-- LIMPAR -->
+
+        <!-- APAGAR -->
 
         <button
             id="btn-clear"
@@ -981,39 +1259,67 @@
    CONFIGURAÇÃO
 ============================================================ */
 
+
 /*
+ * ===========================================================
  * SENHA DA ADMINISTRAÇÃO
+ * ===========================================================
  *
- * TROQUE AQUI.
+ * TROQUE AQUI PELA SUA SENHA.
  *
  * Exemplo:
  *
- * const ADMIN_PASSWORD = "123456";
+ * const ADMIN_PASSWORD = "MinhaSenha@2026";
+ *
  */
 
-const ADMIN_PASSWORD = "123456";
+const ADMIN_PASSWORD =
+    "123456";
+
 
 
 /*
- * Limite de reconhecimento.
+ * ===========================================================
+ * SENSIBILIDADE DO RECONHECIMENTO
+ * ===========================================================
  *
- * Menor = mais rigoroso.
- * Maior = mais permissivo.
+ * Menor:
+ * mais rigoroso
+ *
+ * Maior:
+ * mais permissivo
+ *
  */
 
-const FACE_THRESHOLD = 0.58;
+const FACE_THRESHOLD =
+    0.58;
 
+
+
+/*
+ * ===========================================================
+ * MODELOS FACE API
+ * ===========================================================
+ */
 
 const MODEL_URL =
     "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
 
 
+
+/*
+ * ===========================================================
+ * STORAGE
+ * ===========================================================
+ */
+
 const EMPLOYEE_STORAGE =
-    "PONTO_FACIAL_FUNCIONARIOS_V5";
+    "PONTO_FACIAL_FUNCIONARIOS_V6";
 
 
 const RECORD_STORAGE =
-    "PONTO_FACIAL_REGISTROS_V5";
+    "PONTO_FACIAL_REGISTROS_V6";
+
 
 
 /* ============================================================
@@ -1021,107 +1327,205 @@ const RECORD_STORAGE =
 ============================================================ */
 
 const video =
-    document.getElementById("video");
+    document.getElementById(
+        "video"
+    );
+
 
 const btnCapture =
-    document.getElementById("btn-capture");
+    document.getElementById(
+        "btn-capture"
+    );
+
 
 const btnAdmin =
-    document.getElementById("btn-admin");
+    document.getElementById(
+        "btn-admin"
+    );
+
 
 const passwordModal =
-    document.getElementById("password-modal");
+    document.getElementById(
+        "password-modal"
+    );
+
 
 const adminPassword =
-    document.getElementById("admin-password");
+    document.getElementById(
+        "admin-password"
+    );
+
 
 const passwordError =
-    document.getElementById("password-error");
+    document.getElementById(
+        "password-error"
+    );
+
 
 const btnPasswordEnter =
-    document.getElementById("btn-password-enter");
+    document.getElementById(
+        "btn-password-enter"
+    );
+
 
 const btnPasswordCancel =
-    document.getElementById("btn-password-cancel");
+    document.getElementById(
+        "btn-password-cancel"
+    );
+
 
 const adminModal =
-    document.getElementById("admin-modal");
+    document.getElementById(
+        "admin-modal"
+    );
+
 
 const btnCloseAdmin =
-    document.getElementById("btn-close-admin");
+    document.getElementById(
+        "btn-close-admin"
+    );
+
 
 const btnRegister =
-    document.getElementById("btn-register");
+    document.getElementById(
+        "btn-register"
+    );
+
 
 const btnPdf =
-    document.getElementById("btn-pdf");
+    document.getElementById(
+        "btn-pdf"
+    );
+
 
 const btnSharePdf =
-    document.getElementById("btn-share-pdf");
+    document.getElementById(
+        "btn-share-pdf"
+    );
+
 
 const btnExport =
-    document.getElementById("btn-export");
+    document.getElementById(
+        "btn-export"
+    );
+
 
 const btnClear =
-    document.getElementById("btn-clear");
+    document.getElementById(
+        "btn-clear"
+    );
+
 
 const cameraStatus =
-    document.getElementById("camera-status");
+    document.getElementById(
+        "camera-status"
+    );
+
 
 const cameraError =
-    document.getElementById("camera-error");
+    document.getElementById(
+        "camera-error"
+    );
+
 
 const cameraErrorText =
-    document.getElementById("camera-error-text");
+    document.getElementById(
+        "camera-error-text"
+    );
+
 
 const btnCameraRetry =
-    document.getElementById("btn-camera-retry");
+    document.getElementById(
+        "btn-camera-retry"
+    );
+
 
 const scanner =
-    document.getElementById("scanner");
+    document.getElementById(
+        "scanner"
+    );
+
 
 const faceIndicator =
-    document.getElementById("face-indicator");
+    document.getElementById(
+        "face-indicator"
+    );
+
 
 const statusBox =
-    document.getElementById("status-box");
+    document.getElementById(
+        "status-box"
+    );
+
 
 const statusText =
-    document.getElementById("status-text");
+    document.getElementById(
+        "status-text"
+    );
+
 
 const systemLog =
-    document.getElementById("system-log");
+    document.getElementById(
+        "system-log"
+    );
+
 
 const registerStatus =
-    document.getElementById("register-status");
+    document.getElementById(
+        "register-status"
+    );
+
 
 const employeeList =
-    document.getElementById("employee-list");
+    document.getElementById(
+        "employee-list"
+    );
+
 
 const historyList =
-    document.getElementById("history-list");
+    document.getElementById(
+        "history-list"
+    );
+
 
 const employeeCount =
-    document.getElementById("employee-count");
+    document.getElementById(
+        "employee-count"
+    );
+
 
 const inputName =
-    document.getElementById("funcionario-nome");
+    document.getElementById(
+        "funcionario-nome"
+    );
+
 
 const inputId =
-    document.getElementById("funcionario-id");
+    document.getElementById(
+        "funcionario-id"
+    );
+
 
 
 /* ============================================================
    VARIÁVEIS
 ============================================================ */
 
-let cameraStream = null;
+let cameraStream =
+    null;
 
-let modelsLoaded = false;
 
-let cameraReady = false;
+let modelsLoaded =
+    false;
 
-let processing = false;
+
+let cameraReady =
+    false;
+
+
+let processing =
+    false;
+
 
 
 /* ============================================================
@@ -1130,12 +1534,18 @@ let processing = false;
 
 function updateClock() {
 
-    document.getElementById("clock").textContent =
-        new Date().toLocaleTimeString("pt-BR");
+    document.getElementById(
+        "clock"
+    ).textContent =
+        new Date().toLocaleTimeString(
+            "pt-BR"
+        );
 
 }
 
+
 updateClock();
+
 
 setInterval(
     updateClock,
@@ -1143,27 +1553,41 @@ setInterval(
 );
 
 
+
 /* ============================================================
    LOG
 ============================================================ */
 
-function log(message) {
+function log(
+    message
+) {
 
     const time =
-        new Date().toLocaleTimeString("pt-BR");
+        new Date().toLocaleTimeString(
+            "pt-BR"
+        );
+
 
     const line =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     line.textContent =
         `[${time}] ${message}`;
 
-    systemLog.appendChild(line);
+
+    systemLog.appendChild(
+        line
+    );
+
 
     systemLog.scrollTop =
         systemLog.scrollHeight;
 
 }
+
 
 
 /* ============================================================
@@ -1178,7 +1602,10 @@ function showStatus(
     statusBox.className =
         "mt-4 p-4 rounded-xl text-center text-sm";
 
-    if (type === "success") {
+
+    if (
+        type === "success"
+    ) {
 
         statusBox.classList.add(
             "bg-emerald-500/10",
@@ -1188,7 +1615,11 @@ function showStatus(
         );
 
     }
-    else if (type === "error") {
+
+
+    else if (
+        type === "error"
+    ) {
 
         statusBox.classList.add(
             "bg-rose-500/10",
@@ -1198,6 +1629,8 @@ function showStatus(
         );
 
     }
+
+
     else {
 
         statusBox.classList.add(
@@ -1207,14 +1640,17 @@ function showStatus(
 
     }
 
+
     statusText.textContent =
         message;
+
 
     statusBox.classList.remove(
         "hidden"
     );
 
 }
+
 
 
 /* ============================================================
@@ -1232,6 +1668,7 @@ function getEmployees() {
         );
 
     }
+
     catch {
 
         return [];
@@ -1239,6 +1676,7 @@ function getEmployees() {
     }
 
 }
+
 
 
 function saveEmployees(
@@ -1255,6 +1693,7 @@ function saveEmployees(
 }
 
 
+
 function getRecords() {
 
     try {
@@ -1266,6 +1705,7 @@ function getRecords() {
         );
 
     }
+
     catch {
 
         return [];
@@ -1273,6 +1713,7 @@ function getRecords() {
     }
 
 }
+
 
 
 function saveRecords(
@@ -1289,6 +1730,7 @@ function saveRecords(
 }
 
 
+
 /* ============================================================
    CÂMERA
 ============================================================ */
@@ -1297,7 +1739,9 @@ async function startCamera() {
 
     try {
 
-        if (cameraStream) {
+        if (
+            cameraStream
+        ) {
 
             cameraStream
                 .getTracks()
@@ -1308,43 +1752,47 @@ async function startCamera() {
 
         }
 
+
         cameraStatus.textContent =
             "CÂMERA: CONECTANDO";
+
 
         cameraStatus.className =
             "text-yellow-400";
 
 
         cameraStream =
-            await navigator.mediaDevices.getUserMedia({
+            await navigator.mediaDevices
+                .getUserMedia({
 
-                video: {
+                    video: {
 
-                    facingMode: {
-                        ideal: "user"
+                        facingMode: {
+                            ideal: "user"
+                        },
+
+                        width: {
+                            ideal: 1280
+                        },
+
+                        height: {
+                            ideal: 720
+                        },
+
+                        frameRate: {
+                            ideal: 30
+                        }
+
                     },
 
-                    width: {
-                        ideal: 1280
-                    },
+                    audio: false
 
-                    height: {
-                        ideal: 720
-                    },
-
-                    frameRate: {
-                        ideal: 30
-                    }
-
-                },
-
-                audio: false
-
-            });
+                });
 
 
         video.srcObject =
             cameraStream;
+
 
         await video.play();
 
@@ -1356,6 +1804,7 @@ async function startCamera() {
         cameraStatus.textContent =
             "CÂMERA: ATIVA";
 
+
         cameraStatus.className =
             "text-emerald-400";
 
@@ -1363,6 +1812,7 @@ async function startCamera() {
         cameraError.classList.add(
             "hidden"
         );
+
 
         cameraError.classList.remove(
             "flex"
@@ -1377,13 +1827,22 @@ async function startCamera() {
         updateButton();
 
     }
+
+
     catch (error) {
+
+        console.error(
+            error
+        );
+
 
         cameraReady =
             false;
 
+
         cameraStatus.textContent =
             "CÂMERA: ERRO";
+
 
         cameraStatus.className =
             "text-rose-400";
@@ -1396,6 +1855,7 @@ async function startCamera() {
         cameraError.classList.remove(
             "hidden"
         );
+
 
         cameraError.classList.add(
             "flex"
@@ -1411,14 +1871,16 @@ async function startCamera() {
 }
 
 
+
 btnCameraRetry.addEventListener(
     "click",
     startCamera
 );
 
 
+
 /* ============================================================
-   MODELOS
+   CARREGAR MODELOS
 ============================================================ */
 
 async function loadFaceModels() {
@@ -1470,14 +1932,20 @@ async function loadFaceModels() {
         updateButton();
 
     }
+
+
     catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         showStatus(
             "Erro ao carregar reconhecimento facial.",
             "error"
         );
+
 
         log(
             "Erro nos modelos."
@@ -1486,6 +1954,7 @@ async function loadFaceModels() {
     }
 
 }
+
 
 
 /* ============================================================
@@ -1503,12 +1972,14 @@ function updateButton() {
         btnCapture.disabled =
             false;
 
+
         btnCapture.textContent =
             "REGISTRAR PONTO";
 
     }
 
 }
+
 
 
 /* ============================================================
@@ -1533,17 +2004,26 @@ async function detectFace() {
             video,
             new faceapi.TinyFaceDetectorOptions({
 
-                inputSize: 416,
+                inputSize:
+                    416,
 
-                scoreThreshold: 0.40
+                scoreThreshold:
+                    0.40
 
             })
         )
-        .withFaceLandmarks(true)
+        .withFaceLandmarks(
+            true
+        )
         .withFaceDescriptor();
 
 }
 
+
+
+/* ============================================================
+   CAPTURA
+============================================================ */
 
 async function captureFace(
     attempts = 8
@@ -1559,7 +2039,9 @@ async function captureFace(
             await detectFace();
 
 
-        if (detection) {
+        if (
+            detection
+        ) {
 
             return detection;
 
@@ -1578,7 +2060,14 @@ async function captureFace(
 }
 
 
-function sleep(ms) {
+
+/* ============================================================
+   SLEEP
+============================================================ */
+
+function sleep(
+    ms
+) {
 
     return new Promise(
         resolve =>
@@ -1591,8 +2080,9 @@ function sleep(ms) {
 }
 
 
+
 /* ============================================================
-   DISTÂNCIA
+   DISTÂNCIA FACIAL
 ============================================================ */
 
 function euclideanDistance(
@@ -1600,7 +2090,8 @@ function euclideanDistance(
     b
 ) {
 
-    let sum = 0;
+    let sum =
+        0;
 
 
     for (
@@ -1609,18 +2100,24 @@ function euclideanDistance(
         i++
     ) {
 
-        const d =
-            a[i] - b[i];
+        const difference =
+            a[i] -
+            b[i];
+
 
         sum +=
-            d * d;
+            difference *
+            difference;
 
     }
 
 
-    return Math.sqrt(sum);
+    return Math.sqrt(
+        sum
+    );
 
 }
+
 
 
 /* ============================================================
@@ -1677,8 +2174,11 @@ function findBestEmployee(
 
         const average =
             bestDistances.reduce(
-                (sum, value) =>
-                    sum + value,
+                (
+                    total,
+                    value
+                ) =>
+                    total + value,
                 0
             ) /
             bestDistances.length;
@@ -1686,7 +2186,8 @@ function findBestEmployee(
 
         if (
             !best ||
-            average < best.distance
+            average <
+            best.distance
         ) {
 
             best = {
@@ -1719,28 +2220,38 @@ function findBestEmployee(
 }
 
 
+
 /* ============================================================
-   BIPE
+   SISTEMA DE ÁUDIO
 ============================================================ */
 
+let audioContext =
+    null;
+
+
+
 /*
- * O navegador bloqueia áudio automático.
+ * ===========================================================
+ * BIPE FORTE E LONGO
+ * ===========================================================
  *
- * Por isso o AudioContext é criado depois
- * que o usuário interage com o sistema.
+ * frequency = frequência
+ * duration  = duração em milissegundos
+ * volume    = volume
+ *
  */
 
-let audioContext = null;
-
-
 function beep(
-    frequency = 900,
-    duration = 160
+    frequency = 1000,
+    duration = 700,
+    volume = 0.9
 ) {
 
     try {
 
-        if (!audioContext) {
+        if (
+            !audioContext
+        ) {
 
             audioContext =
                 new (
@@ -1762,33 +2273,62 @@ function beep(
 
 
         const oscillator =
-            audioContext.createOscillator();
+            audioContext
+                .createOscillator();
+
 
         const gain =
-            audioContext.createGain();
+            audioContext
+                .createGain();
 
 
         oscillator.type =
             "sine";
 
+
         oscillator.frequency.value =
             frequency;
 
 
+        /*
+         * Começa quase silencioso.
+         */
+
         gain.gain.setValueAtTime(
-            0.0001,
+            0.001,
             audioContext.currentTime
         );
 
 
+        /*
+         * Aumenta rapidamente.
+         */
+
         gain.gain.exponentialRampToValueAtTime(
-            0.25,
-            audioContext.currentTime + 0.01
+            volume,
+            audioContext.currentTime +
+            0.03
         );
 
 
+        /*
+         * Mantém o volume.
+         */
+
+        gain.gain.setValueAtTime(
+            volume,
+            audioContext.currentTime +
+            duration / 1000 -
+            0.10
+        );
+
+
+        /*
+         * Diminui no final.
+         */
+
         gain.gain.exponentialRampToValueAtTime(
-            0.0001,
+            0.001,
             audioContext.currentTime +
             duration / 1000
         );
@@ -1798,6 +2338,7 @@ function beep(
             gain
         );
 
+
         gain.connect(
             audioContext.destination
         );
@@ -1805,16 +2346,20 @@ function beep(
 
         oscillator.start();
 
+
         oscillator.stop(
             audioContext.currentTime +
             duration / 1000
         );
 
     }
+
+
     catch (error) {
 
         console.log(
-            "Áudio não disponível."
+            "Áudio não disponível.",
+            error
         );
 
     }
@@ -1822,8 +2367,63 @@ function beep(
 }
 
 
+
 /* ============================================================
-   PONTO
+   BIPE DE SUCESSO
+============================================================ */
+
+function successSound() {
+
+    /*
+     * PRIMEIRO BIPE
+     */
+
+    beep(
+        900,
+        750,
+        0.95
+    );
+
+
+    /*
+     * SEGUNDO BIPE
+     */
+
+    setTimeout(
+        () => {
+
+            beep(
+                1250,
+                750,
+                0.95
+            );
+
+        },
+        180
+    );
+
+}
+
+
+
+/* ============================================================
+   BIPE DE ERRO
+============================================================ */
+
+function errorSound() {
+
+    beep(
+        280,
+        1000,
+        0.95
+    );
+
+}
+
+
+
+/* ============================================================
+   REGISTRAR PONTO
 ============================================================ */
 
 btnCapture.addEventListener(
@@ -1832,10 +2432,15 @@ btnCapture.addEventListener(
 );
 
 
+
 async function registerPoint() {
 
-    if (processing) {
+    if (
+        processing
+    ) {
+
         return;
+
     }
 
 
@@ -1847,15 +2452,14 @@ async function registerPoint() {
         employees.length === 0
     ) {
 
-        beep(
-            250,
-            250
-        );
+        errorSound();
+
 
         showStatus(
             "Nenhum funcionário cadastrado. Abra a Administração.",
             "error"
         );
+
 
         return;
 
@@ -1868,6 +2472,7 @@ async function registerPoint() {
 
     btnCapture.disabled =
         true;
+
 
     btnCapture.textContent =
         "RECONHECENDO...";
@@ -1901,12 +2506,11 @@ async function registerPoint() {
             );
 
 
-        if (!detection) {
+        if (
+            !detection
+        ) {
 
-            beep(
-                250,
-                250
-            );
+            errorSound();
 
 
             faceIndicator.textContent =
@@ -1946,12 +2550,11 @@ async function registerPoint() {
             );
 
 
-        if (!match) {
+        if (
+            !match
+        ) {
 
-            beep(
-                250,
-                250
-            );
+            errorSound();
 
 
             faceIndicator.textContent =
@@ -2010,7 +2613,10 @@ async function registerPoint() {
 
             distance:
                 Number(
-                    match.distance.toFixed(4)
+                    match.distance
+                        .toFixed(
+                            4
+                        )
                 )
 
         };
@@ -2031,24 +2637,12 @@ async function registerPoint() {
 
 
         /*
-         * Bipe de sucesso.
+         * ================================================
+         * SOM DE REGISTRO
+         * ================================================
          */
 
-        beep(
-            1000,
-            180
-        );
-
-
-        await sleep(
-            100
-        );
-
-
-        beep(
-            1400,
-            180
-        );
+        successSound();
 
 
         faceIndicator.textContent =
@@ -2061,20 +2655,46 @@ async function registerPoint() {
         );
 
 
+        document
+            .getElementById(
+                "main-card"
+            )
+            .classList.add(
+                "pulse-success"
+            );
+
+
+        setTimeout(
+            () => {
+
+                document
+                    .getElementById(
+                        "main-card"
+                    )
+                    .classList.remove(
+                        "pulse-success"
+                    );
+
+            },
+            1800
+        );
+
+
         log(
             `Ponto registrado: ${employee.name} | ${record.tipo}`
         );
 
-
     }
+
+
     catch (error) {
 
-        console.error(error);
-
-        beep(
-            250,
-            250
+        console.error(
+            error
         );
+
+
+        errorSound();
 
 
         showStatus(
@@ -2083,10 +2703,12 @@ async function registerPoint() {
         );
 
     }
+
+
     finally {
 
         await sleep(
-            1200
+            1500
         );
 
 
@@ -2110,6 +2732,7 @@ async function registerPoint() {
 }
 
 
+
 /* ============================================================
    ID
 ============================================================ */
@@ -2117,7 +2740,7 @@ async function registerPoint() {
 function generateId() {
 
     if (
-        crypto &&
+        window.crypto &&
         crypto.randomUUID
     ) {
 
@@ -2137,8 +2760,9 @@ function generateId() {
 }
 
 
+
 /* ============================================================
-   SENHA ADM
+   ABRIR SENHA
 ============================================================ */
 
 btnAdmin.addEventListener(
@@ -2147,11 +2771,13 @@ btnAdmin.addEventListener(
 );
 
 
+
 function openPassword() {
 
     passwordModal.classList.remove(
         "hidden"
     );
+
 
     passwordModal.classList.add(
         "flex"
@@ -2160,6 +2786,7 @@ function openPassword() {
 
     adminPassword.value =
         "";
+
 
     passwordError.classList.add(
         "hidden"
@@ -2175,10 +2802,16 @@ function openPassword() {
 }
 
 
+
+/* ============================================================
+   FECHAR SENHA
+============================================================ */
+
 btnPasswordCancel.addEventListener(
     "click",
     closePassword
 );
+
 
 
 function closePassword() {
@@ -2187,6 +2820,7 @@ function closePassword() {
         "hidden"
     );
 
+
     passwordModal.classList.remove(
         "flex"
     );
@@ -2194,10 +2828,16 @@ function closePassword() {
 }
 
 
+
+/* ============================================================
+   VERIFICAR SENHA
+============================================================ */
+
 btnPasswordEnter.addEventListener(
     "click",
     checkPassword
 );
+
 
 
 adminPassword.addEventListener(
@@ -2215,6 +2855,7 @@ adminPassword.addEventListener(
 
     }
 );
+
 
 
 function checkPassword() {
@@ -2236,6 +2877,7 @@ function checkPassword() {
             "hidden"
         );
 
+
         adminModal.classList.add(
             "flex"
         );
@@ -2244,16 +2886,15 @@ function checkPassword() {
         renderAdmin();
 
 
-        /*
-         * Bipe de acesso autorizado.
-         */
-
         beep(
             1000,
-            120
+            500,
+            0.8
         );
 
     }
+
+
     else {
 
         passwordError.classList.remove(
@@ -2261,10 +2902,7 @@ function checkPassword() {
         );
 
 
-        beep(
-            250,
-            200
-        );
+        errorSound();
 
 
         adminPassword.select();
@@ -2272,6 +2910,7 @@ function checkPassword() {
     }
 
 }
+
 
 
 /* ============================================================
@@ -2284,17 +2923,20 @@ btnCloseAdmin.addEventListener(
 );
 
 
+
 function closeAdmin() {
 
     adminModal.classList.add(
         "hidden"
     );
 
+
     adminModal.classList.remove(
         "flex"
     );
 
 }
+
 
 
 adminModal.addEventListener(
@@ -2314,8 +2956,9 @@ adminModal.addEventListener(
 );
 
 
+
 /* ============================================================
-   CADASTRO
+   CADASTRAR FUNCIONÁRIO
 ============================================================ */
 
 btnRegister.addEventListener(
@@ -2324,10 +2967,12 @@ btnRegister.addEventListener(
 );
 
 
+
 async function registerEmployee() {
 
     const name =
         inputName.value.trim();
+
 
     const id =
         inputId.value.trim();
@@ -2343,6 +2988,7 @@ async function registerEmployee() {
             "error"
         );
 
+
         return;
 
     }
@@ -2355,7 +3001,8 @@ async function registerEmployee() {
     if (
         employees.some(
             employee =>
-                employee.id.toLowerCase() ===
+                employee.id
+                    .toLowerCase() ===
                 id.toLowerCase()
         )
     ) {
@@ -2364,6 +3011,7 @@ async function registerEmployee() {
             "Essa matrícula já está cadastrada.",
             "error"
         );
+
 
         return;
 
@@ -2374,7 +3022,8 @@ async function registerEmployee() {
         true;
 
 
-    const descriptors = [];
+    const descriptors =
+        [];
 
 
     try {
@@ -2416,7 +3065,9 @@ async function registerEmployee() {
                 );
 
 
-            if (!detection) {
+            if (
+                !detection
+            ) {
 
                 throw new Error(
                     `Não foi possível capturar a imagem ${i}.`
@@ -2443,7 +3094,8 @@ async function registerEmployee() {
             descriptors,
 
             createdAt:
-                new Date().toISOString()
+                new Date()
+                    .toISOString()
 
         });
 
@@ -2456,25 +3108,16 @@ async function registerEmployee() {
         inputName.value =
             "";
 
+
         inputId.value =
             "";
 
 
-        beep(
-            1000,
-            150
-        );
+        /*
+         * SOM DE CADASTRO
+         */
 
-
-        await sleep(
-            100
-        );
-
-
-        beep(
-            1400,
-            150
-        );
+        successSound();
 
 
         showRegisterStatus(
@@ -2491,7 +3134,12 @@ async function registerEmployee() {
         renderAdmin();
 
     }
+
+
     catch (error) {
+
+        errorSound();
+
 
         showRegisterStatus(
             error.message,
@@ -2499,6 +3147,8 @@ async function registerEmployee() {
         );
 
     }
+
+
     finally {
 
         btnRegister.disabled =
@@ -2507,6 +3157,7 @@ async function registerEmployee() {
     }
 
 }
+
 
 
 /* ============================================================
@@ -2532,6 +3183,8 @@ function showRegisterStatus(
         );
 
     }
+
+
     else if (
         type === "error"
     ) {
@@ -2542,6 +3195,8 @@ function showRegisterStatus(
         );
 
     }
+
+
     else {
 
         registerStatus.classList.add(
@@ -2563,6 +3218,7 @@ function showRegisterStatus(
 }
 
 
+
 /* ============================================================
    ADMIN
 ============================================================ */
@@ -2571,6 +3227,7 @@ function renderAdmin() {
 
     const employees =
         getEmployees();
+
 
     const records =
         getRecords();
@@ -2589,18 +3246,22 @@ function renderAdmin() {
     ) {
 
         employeeList.innerHTML = `
-            <div class="
-                p-4
-                rounded-xl
-                bg-slate-950
-                text-sm
-                text-slate-500
-            ">
+            <div
+                class="
+                    p-4
+                    rounded-xl
+                    bg-slate-950
+                    text-sm
+                    text-slate-500
+                "
+            >
                 Nenhum funcionário cadastrado.
             </div>
         `;
 
     }
+
+
     else {
 
         employees.forEach(
@@ -2628,17 +3289,23 @@ function renderAdmin() {
 
                     <div>
 
-                        <div class="font-semibold">
+                        <div
+                            class="
+                                font-semibold
+                            "
+                        >
                             ${escapeHtml(
                                 employee.name
                             )}
                         </div>
 
-                        <div class="
-                            text-xs
-                            text-slate-500
-                            mt-1
-                        ">
+                        <div
+                            class="
+                                text-xs
+                                text-slate-500
+                                mt-1
+                            "
+                        >
                             Matrícula:
                             ${escapeHtml(
                                 employee.id
@@ -2646,6 +3313,7 @@ function renderAdmin() {
                         </div>
 
                     </div>
+
 
                     <button
                         class="
@@ -2692,7 +3360,10 @@ function renderAdmin() {
     }
 
 
-    /* HISTÓRICO */
+
+    /* ========================================================
+       HISTÓRICO
+    ========================================================= */
 
     historyList.innerHTML =
         "";
@@ -2709,18 +3380,22 @@ function renderAdmin() {
     ) {
 
         historyList.innerHTML = `
-            <div class="
-                p-4
-                rounded-xl
-                bg-slate-950
-                text-sm
-                text-slate-500
-            ">
+            <div
+                class="
+                    p-4
+                    rounded-xl
+                    bg-slate-950
+                    text-sm
+                    text-slate-500
+                "
+            >
                 Nenhum registro.
             </div>
         `;
 
     }
+
+
     else {
 
         reversed.forEach(
@@ -2747,19 +3422,24 @@ function renderAdmin() {
 
                     <div>
 
-                        <div class="
-                            font-semibold
-                            text-sm
-                        ">
+                        <div
+                            class="
+                                font-semibold
+                                text-sm
+                            "
+                        >
                             ${escapeHtml(
                                 record.funcionario_nome
                             )}
                         </div>
 
-                        <div class="
-                            text-[10px]
-                            text-slate-500
-                        ">
+
+                        <div
+                            class="
+                                text-[10px]
+                                text-slate-500
+                            "
+                        >
                             ${escapeHtml(
                                 record.funcionario_id
                             )}
@@ -2768,31 +3448,41 @@ function renderAdmin() {
                     </div>
 
 
-                    <div class="
-                        text-right
-                        text-xs
-                    ">
+                    <div
+                        class="
+                            text-right
+                            text-xs
+                        "
+                    >
 
-                        <div class="
-                            text-emerald-400
-                            font-mono
-                        ">
+                        <div
+                            class="
+                                text-emerald-400
+                                font-mono
+                            "
+                        >
                             ${escapeHtml(
                                 record.hora
                             )}
                         </div>
 
-                        <div class="
-                            text-slate-400
-                        ">
+
+                        <div
+                            class="
+                                text-slate-400
+                            "
+                        >
                             ${escapeHtml(
                                 record.tipo
                             )}
                         </div>
 
-                        <div class="
-                            text-slate-600
-                        ">
+
+                        <div
+                            class="
+                                text-slate-600
+                            "
+                        >
                             ${escapeHtml(
                                 record.data
                             )}
@@ -2815,8 +3505,9 @@ function renderAdmin() {
 }
 
 
+
 /* ============================================================
-   EXCLUIR
+   EXCLUIR FUNCIONÁRIO
 ============================================================ */
 
 function deleteEmployee(
@@ -2835,8 +3526,12 @@ function deleteEmployee(
         );
 
 
-    if (!employee) {
+    if (
+        !employee
+    ) {
+
         return;
+
     }
 
 
@@ -2870,8 +3565,9 @@ function deleteEmployee(
 }
 
 
+
 /* ============================================================
-   PDF
+   GERAR PDF
 ============================================================ */
 
 function createPDF() {
@@ -2893,6 +3589,7 @@ function createPDF() {
             "Não existem registros para gerar o PDF."
         );
 
+
         return null;
 
     }
@@ -2906,7 +3603,9 @@ function createPDF() {
         new Date();
 
 
-    /* CABEÇALHO */
+    /*
+     * CABEÇALHO
+     */
 
     doc.setFontSize(
         20
@@ -2952,7 +3651,9 @@ function createPDF() {
     );
 
 
-    /* RESUMO */
+    /*
+     * RESUMO
+     */
 
     doc.setFontSize(
         11
@@ -2973,7 +3674,9 @@ function createPDF() {
     );
 
 
-    /* CABEÇALHO TABELA */
+    /*
+     * TABELA
+     */
 
     let y =
         72;
@@ -3019,7 +3722,8 @@ function createPDF() {
     );
 
 
-    y += 6;
+    y +=
+        6;
 
 
     doc.line(
@@ -3030,13 +3734,16 @@ function createPDF() {
     );
 
 
-    y += 7;
+    y +=
+        7;
 
 
-    /* REGISTROS */
+    /*
+     * REGISTROS
+     */
 
     records.forEach(
-        (record, index) => {
+        record => {
 
             if (
                 y > 280
@@ -3044,78 +3751,89 @@ function createPDF() {
 
                 doc.addPage();
 
-                y = 20;
+                y =
+                    20;
 
             }
 
 
             doc.text(
-                String(record.data),
+                String(
+                    record.data
+                ),
                 20,
                 y
             );
 
 
             doc.text(
-                String(record.hora),
+                String(
+                    record.hora
+                ),
                 45,
                 y
             );
 
 
             doc.text(
-                String(record.funcionario_id)
-                    .substring(
-                        0,
-                        14
-                    ),
+                String(
+                    record.funcionario_id
+                ).substring(
+                    0,
+                    14
+                ),
                 65,
                 y
             );
 
 
             doc.text(
-                String(record.funcionario_nome)
-                    .substring(
-                        0,
-                        28
-                    ),
+                String(
+                    record.funcionario_nome
+                ).substring(
+                    0,
+                    28
+                ),
                 95,
                 y
             );
 
 
             doc.text(
-                String(record.tipo)
-                    .substring(
-                        0,
-                        18
-                    ),
+                String(
+                    record.tipo
+                ).substring(
+                    0,
+                    18
+                ),
                 155,
                 y
             );
 
 
-            y += 7;
+            y +=
+                7;
 
         }
     );
 
 
-    /* RODAPÉ */
+    /*
+     * RODAPÉ
+     */
 
     const pages =
         doc.getNumberOfPages();
 
 
     for (
-        let i = 1;
-        i <= pages;
-        i++
+        let page = 1;
+        page <= pages;
+        page++
     ) {
 
         doc.setPage(
-            i
+            page
         );
 
 
@@ -3125,7 +3843,7 @@ function createPDF() {
 
 
         doc.text(
-            `Página ${i} de ${pages}`,
+            `Página ${page} de ${pages}`,
             170,
             290
         );
@@ -3136,6 +3854,7 @@ function createPDF() {
     return doc;
 
 }
+
 
 
 /* ============================================================
@@ -3150,15 +3869,22 @@ btnPdf.addEventListener(
             createPDF();
 
 
-        if (!doc) {
+        if (
+            !doc
+        ) {
+
             return;
+
         }
 
 
         const filename =
             `ponto-facial-${new Date()
                 .toISOString()
-                .slice(0, 10)}.pdf`;
+                .slice(
+                    0,
+                    10
+                )}.pdf`;
 
 
         doc.save(
@@ -3168,15 +3894,17 @@ btnPdf.addEventListener(
 
         beep(
             1000,
-            120
+            500,
+            0.8
         );
 
     }
 );
 
 
+
 /* ============================================================
-   ENVIAR / COMPARTILHAR PDF
+   COMPARTILHAR PDF
 ============================================================ */
 
 btnSharePdf.addEventListener(
@@ -3187,8 +3915,12 @@ btnSharePdf.addEventListener(
             createPDF();
 
 
-        if (!doc) {
+        if (
+            !doc
+        ) {
+
             return;
+
         }
 
 
@@ -3201,12 +3933,17 @@ btnSharePdf.addEventListener(
         const filename =
             `ponto-facial-${new Date()
                 .toISOString()
-                .slice(0, 10)}.pdf`;
+                .slice(
+                    0,
+                    10
+                )}.pdf`;
 
 
         const file =
             new File(
-                [blob],
+                [
+                    blob
+                ],
                 filename,
                 {
                     type:
@@ -3216,17 +3953,16 @@ btnSharePdf.addEventListener(
 
 
         /*
-         * Celular moderno:
-         * abre WhatsApp, e-mail,
-         * Drive etc. pelo menu
-         * nativo de compartilhamento.
+         * COMPARTILHAMENTO NATIVO
          */
 
         if (
             navigator.share &&
             navigator.canShare &&
             navigator.canShare({
-                files: [file]
+                files: [
+                    file
+                ]
             })
         ) {
 
@@ -3249,18 +3985,17 @@ btnSharePdf.addEventListener(
 
                 beep(
                     1000,
-                    120
+                    500,
+                    0.8
                 );
 
 
                 return;
 
             }
-            catch (error) {
 
-                /*
-                 * Usuário cancelou.
-                 */
+
+            catch (error) {
 
                 return;
 
@@ -3270,9 +4005,7 @@ btnSharePdf.addEventListener(
 
 
         /*
-         * Se o navegador não suporta
-         * compartilhamento de arquivos,
-         * faz download.
+         * FALLBACK
          */
 
         doc.save(
@@ -3288,8 +4021,9 @@ btnSharePdf.addEventListener(
 );
 
 
+
 /* ============================================================
-   CSV
+   EXPORTAR CSV
 ============================================================ */
 
 btnExport.addEventListener(
@@ -3308,19 +4042,28 @@ btnExport.addEventListener(
                 "Não existem registros."
             );
 
+
             return;
 
         }
 
 
         const header = [
+
             "ID",
+
             "Funcionario ID",
+
             "Funcionario",
+
             "Tipo",
+
             "Data",
+
             "Hora",
+
             "Distancia"
+
         ];
 
 
@@ -3362,9 +4105,13 @@ btnExport.addEventListener(
                                         '""'
                                     )}"`
                         )
-                        .join(";")
+                        .join(
+                            ";"
+                        )
             )
-            .join("\n");
+            .join(
+                "\n"
+            );
 
 
         const blob =
@@ -3411,8 +4158,9 @@ btnExport.addEventListener(
 );
 
 
+
 /* ============================================================
-   APAGAR TUDO
+   APAGAR DADOS
 ============================================================ */
 
 btnClear.addEventListener(
@@ -3443,6 +4191,9 @@ btnClear.addEventListener(
         renderAdmin();
 
 
+        successSound();
+
+
         showStatus(
             "Todos os dados foram apagados.",
             "success"
@@ -3452,15 +4203,18 @@ btnClear.addEventListener(
 );
 
 
+
 /* ============================================================
-   SEGURANÇA HTML
+   ESCAPAR HTML
 ============================================================ */
 
 function escapeHtml(
     value
 ) {
 
-    return String(value)
+    return String(
+        value
+    )
         .replace(
             /&/g,
             "&amp;"
@@ -3485,6 +4239,7 @@ function escapeHtml(
 }
 
 
+
 /* ============================================================
    MONITORAR ROSTO
 ============================================================ */
@@ -3505,6 +4260,7 @@ async function monitorFace() {
             monitorFace
         );
 
+
         return;
 
     }
@@ -3515,13 +4271,15 @@ async function monitorFace() {
 
 
     if (
-        now - lastCheck <
+        now -
+        lastCheck <
         600
     ) {
 
         requestAnimationFrame(
             monitorFace
         );
+
 
         return;
 
@@ -3538,10 +4296,13 @@ async function monitorFace() {
             await detectFace();
 
 
-        if (detection) {
+        if (
+            detection
+        ) {
 
             faceIndicator.textContent =
                 "ROSTO DETECTADO ✓";
+
 
             faceIndicator.className = `
                 absolute
@@ -3559,10 +4320,13 @@ async function monitorFace() {
             `;
 
         }
+
+
         else {
 
             faceIndicator.textContent =
                 "PROCURANDO ROSTO";
+
 
             faceIndicator.className = `
                 absolute
@@ -3582,6 +4346,8 @@ async function monitorFace() {
         }
 
     }
+
+
     catch {
 
     }
@@ -3592,6 +4358,7 @@ async function monitorFace() {
     );
 
 }
+
 
 
 /* ============================================================
@@ -3606,8 +4373,11 @@ async function initialize() {
 
 
     await Promise.all([
+
         startCamera(),
+
         loadFaceModels()
+
     ]);
 
 
@@ -3623,10 +4393,12 @@ async function initialize() {
 }
 
 
+
 window.addEventListener(
     "load",
     initialize
 );
+
 
 
 /* ============================================================
@@ -3637,7 +4409,9 @@ window.addEventListener(
     "beforeunload",
     () => {
 
-        if (cameraStream) {
+        if (
+            cameraStream
+        ) {
 
             cameraStream
                 .getTracks()
@@ -3654,4 +4428,5 @@ window.addEventListener(
 </script>
 
 </body>
+
 </html>
