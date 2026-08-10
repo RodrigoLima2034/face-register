@@ -45,14 +45,12 @@
             box-sizing: border-box;
         }
 
-
         html,
         body {
             margin: 0;
             padding: 0;
             min-height: 100%;
         }
-
 
         body {
 
@@ -66,14 +64,12 @@
 
         }
 
-
         video {
 
             transform:
                 scaleX(-1);
 
         }
-
 
         .scanner-line {
 
@@ -83,7 +79,6 @@
                 infinite;
 
         }
-
 
         @keyframes scanner {
 
@@ -122,7 +117,6 @@
 
         }
 
-
         .pulse-success {
 
             animation:
@@ -131,7 +125,6 @@
                 2;
 
         }
-
 
         @keyframes successPulse {
 
@@ -158,6 +151,41 @@
 
         }
 
+        .success-glow {
+
+            animation:
+                successGlow 1.2s
+                ease-out;
+
+        }
+
+        @keyframes successGlow {
+
+            0% {
+
+                box-shadow:
+                    0 0 0
+                    rgba(52,211,153,0);
+
+            }
+
+            40% {
+
+                box-shadow:
+                    0 0 45px
+                    rgba(52,211,153,.45);
+
+            }
+
+            100% {
+
+                box-shadow:
+                    0 0 0
+                    rgba(52,211,153,0);
+
+            }
+
+        }
 
     </style>
 
@@ -268,7 +296,7 @@
 
 
 <!-- =========================================================
-     CONTEÚDO PRINCIPAL
+     CONTEÚDO
 ========================================================= -->
 
 <main
@@ -291,11 +319,13 @@
             rounded-3xl
             p-5
             shadow-2xl
+            transition-all
+            duration-500
         "
     >
 
 
-        <!-- STATUS DA CÂMERA -->
+        <!-- STATUS -->
 
         <div
             class="
@@ -567,7 +597,7 @@
 
 
         <!-- =================================================
-             TIPO DE PONTO
+             TIPO
         ================================================== -->
 
         <div
@@ -1126,7 +1156,7 @@
 
 
         <!-- =================================================
-             REGISTROS
+             HISTÓRICO
         ================================================== -->
 
         <div
@@ -1256,20 +1286,16 @@
 <script>
 
 /* ============================================================
-   CONFIGURAÇÃO
+   CONFIGURAÇÕES
 ============================================================ */
 
 
 /*
  * ===========================================================
- * SENHA DA ADMINISTRAÇÃO
+ * SENHA DO ADMIN
  * ===========================================================
  *
- * TROQUE AQUI PELA SUA SENHA.
- *
- * Exemplo:
- *
- * const ADMIN_PASSWORD = "MinhaSenha@2026";
+ * ALTERE AQUI.
  *
  */
 
@@ -1280,15 +1306,8 @@ const ADMIN_PASSWORD =
 
 /*
  * ===========================================================
- * SENSIBILIDADE DO RECONHECIMENTO
+ * LIMITE DE RECONHECIMENTO
  * ===========================================================
- *
- * Menor:
- * mais rigoroso
- *
- * Maior:
- * mais permissivo
- *
  */
 
 const FACE_THRESHOLD =
@@ -1298,7 +1317,7 @@ const FACE_THRESHOLD =
 
 /*
  * ===========================================================
- * MODELOS FACE API
+ * MODELOS
  * ===========================================================
  */
 
@@ -1314,11 +1333,11 @@ const MODEL_URL =
  */
 
 const EMPLOYEE_STORAGE =
-    "PONTO_FACIAL_FUNCIONARIOS_V6";
+    "PONTO_FACIAL_FUNCIONARIOS_V7";
 
 
 const RECORD_STORAGE =
-    "PONTO_FACIAL_REGISTROS_V6";
+    "PONTO_FACIAL_REGISTROS_V7";
 
 
 
@@ -1616,7 +1635,6 @@ function showStatus(
 
     }
 
-
     else if (
         type === "error"
     ) {
@@ -1629,7 +1647,6 @@ function showStatus(
         );
 
     }
-
 
     else {
 
@@ -1880,7 +1897,7 @@ btnCameraRetry.addEventListener(
 
 
 /* ============================================================
-   CARREGAR MODELOS
+   MODELOS
 ============================================================ */
 
 async function loadFaceModels() {
@@ -1983,7 +2000,7 @@ function updateButton() {
 
 
 /* ============================================================
-   DETECTAR ROSTO
+   DETECÇÃO
 ============================================================ */
 
 async function detectFace() {
@@ -2082,7 +2099,7 @@ function sleep(
 
 
 /* ============================================================
-   DISTÂNCIA FACIAL
+   DISTÂNCIA
 ============================================================ */
 
 function euclideanDistance(
@@ -2222,7 +2239,7 @@ function findBestEmployee(
 
 
 /* ============================================================
-   SISTEMA DE ÁUDIO
+   SISTEMA DE ÁUDIO PROFISSIONAL
 ============================================================ */
 
 let audioContext =
@@ -2231,191 +2248,331 @@ let audioContext =
 
 
 /*
- * ===========================================================
- * BIPE FORTE E LONGO
- * ===========================================================
- *
- * frequency = frequência
- * duration  = duração em milissegundos
- * volume    = volume
- *
+ * ------------------------------------------------------------
+ * CONTEXTO DE ÁUDIO
+ * ------------------------------------------------------------
  */
 
-function beep(
-    frequency = 1000,
-    duration = 700,
-    volume = 0.9
-) {
+function getAudioContext() {
 
-    try {
+    if (
+        !audioContext
+    ) {
 
-        if (
-            !audioContext
-        ) {
-
-            audioContext =
-                new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
-
-        }
-
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-
-            audioContext.resume();
-
-        }
-
-
-        const oscillator =
-            audioContext
-                .createOscillator();
-
-
-        const gain =
-            audioContext
-                .createGain();
-
-
-        oscillator.type =
-            "sine";
-
-
-        oscillator.frequency.value =
-            frequency;
-
-
-        /*
-         * Começa quase silencioso.
-         */
-
-        gain.gain.setValueAtTime(
-            0.001,
-            audioContext.currentTime
-        );
-
-
-        /*
-         * Aumenta rapidamente.
-         */
-
-        gain.gain.exponentialRampToValueAtTime(
-            volume,
-            audioContext.currentTime +
-            0.03
-        );
-
-
-        /*
-         * Mantém o volume.
-         */
-
-        gain.gain.setValueAtTime(
-            volume,
-            audioContext.currentTime +
-            duration / 1000 -
-            0.10
-        );
-
-
-        /*
-         * Diminui no final.
-         */
-
-        gain.gain.exponentialRampToValueAtTime(
-            0.001,
-            audioContext.currentTime +
-            duration / 1000
-        );
-
-
-        oscillator.connect(
-            gain
-        );
-
-
-        gain.connect(
-            audioContext.destination
-        );
-
-
-        oscillator.start();
-
-
-        oscillator.stop(
-            audioContext.currentTime +
-            duration / 1000
-        );
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
 
     }
 
 
-    catch (error) {
+    if (
+        audioContext.state ===
+        "suspended"
+    ) {
 
-        console.log(
-            "Áudio não disponível.",
-            error
-        );
+        audioContext.resume();
 
     }
+
+
+    return audioContext;
 
 }
 
 
 
-/* ============================================================
-   BIPE DE SUCESSO
-============================================================ */
+/*
+ * ------------------------------------------------------------
+ * NOTA MUSICAL
+ * ------------------------------------------------------------
+ */
+
+function playTone(
+    frequency,
+    duration,
+    startTime,
+    volume = 0.22,
+    type = "sine"
+) {
+
+    const ctx =
+        getAudioContext();
+
+
+    const oscillator =
+        ctx.createOscillator();
+
+
+    const gain =
+        ctx.createGain();
+
+
+    oscillator.type =
+        type;
+
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        startTime
+    );
+
+
+    /*
+     * Entrada suave
+     */
+
+    gain.gain.setValueAtTime(
+        0.001,
+        startTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        startTime + 0.025
+    );
+
+
+    /*
+     * Sustentação
+     */
+
+    gain.gain.setValueAtTime(
+        volume,
+        startTime +
+        duration -
+        0.10
+    );
+
+
+    /*
+     * Saída suave
+     */
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        startTime +
+        duration
+    );
+
+
+    oscillator.connect(
+        gain
+    );
+
+
+    gain.connect(
+        ctx.destination
+    );
+
+
+    oscillator.start(
+        startTime
+    );
+
+
+    oscillator.stop(
+        startTime +
+        duration
+    );
+
+}
+
+
+
+/*
+ * ------------------------------------------------------------
+ * SOM DE REGISTRO
+ *
+ * TIN → TIIIN → TIIIIIN
+ *
+ * Som de terminal biométrico.
+ * ------------------------------------------------------------
+ */
 
 function successSound() {
 
+    const ctx =
+        getAudioContext();
+
+
+    const start =
+        ctx.currentTime;
+
+
     /*
-     * PRIMEIRO BIPE
+     * Mi
      */
 
-    beep(
-        900,
-        750,
-        0.95
+    playTone(
+        659.25,
+        0.25,
+        start,
+        0.22,
+        "sine"
     );
 
 
     /*
-     * SEGUNDO BIPE
+     * Sol
      */
 
-    setTimeout(
-        () => {
+    playTone(
+        783.99,
+        0.32,
+        start + 0.14,
+        0.25,
+        "sine"
+    );
 
-            beep(
-                1250,
-                750,
-                0.95
-            );
 
-        },
-        180
+    /*
+     * Dó
+     */
+
+    playTone(
+        1046.50,
+        0.60,
+        start + 0.35,
+        0.28,
+        "sine"
+    );
+
+
+    /*
+     * Pequeno brilho sonoro
+     */
+
+    playTone(
+        1318.51,
+        0.25,
+        start + 0.43,
+        0.08,
+        "triangle"
     );
 
 }
 
 
 
-/* ============================================================
-   BIPE DE ERRO
-============================================================ */
+/*
+ * ------------------------------------------------------------
+ * SOM DE ADMIN
+ *
+ * DÓ → MI → SOL
+ * ------------------------------------------------------------
+ */
+
+function adminSound() {
+
+    const ctx =
+        getAudioContext();
+
+
+    const start =
+        ctx.currentTime;
+
+
+    playTone(
+        523.25,
+        0.20,
+        start,
+        0.16
+    );
+
+
+    playTone(
+        659.25,
+        0.26,
+        start + 0.12,
+        0.18
+    );
+
+
+    playTone(
+        783.99,
+        0.40,
+        start + 0.25,
+        0.20
+    );
+
+}
+
+
+
+/*
+ * ------------------------------------------------------------
+ * SOM DE ERRO
+ *
+ * SOM GRAVE
+ * ------------------------------------------------------------
+ */
 
 function errorSound() {
 
-    beep(
-        280,
-        1000,
-        0.95
+    const ctx =
+        getAudioContext();
+
+
+    const start =
+        ctx.currentTime;
+
+
+    playTone(
+        220,
+        0.30,
+        start,
+        0.22,
+        "sine"
+    );
+
+
+    playTone(
+        185,
+        0.48,
+        start + 0.23,
+        0.24,
+        "sine"
+    );
+
+}
+
+
+
+/*
+ * ------------------------------------------------------------
+ * SOM DE PROCESSAMENTO
+ * ------------------------------------------------------------
+ */
+
+function processingSound() {
+
+    const ctx =
+        getAudioContext();
+
+
+    const start =
+        ctx.currentTime;
+
+
+    playTone(
+        440,
+        0.10,
+        start,
+        0.08,
+        "triangle"
+    );
+
+
+    playTone(
+        554.37,
+        0.10,
+        start + 0.13,
+        0.08,
+        "triangle"
     );
 
 }
@@ -2491,6 +2648,13 @@ async function registerPoint() {
         "Olhe diretamente para a câmera...",
         "loading"
     );
+
+
+    /*
+     * SOM DE PROCESSAMENTO
+     */
+
+    processingSound();
 
 
     try {
@@ -2637,9 +2801,9 @@ async function registerPoint() {
 
 
         /*
-         * ================================================
-         * SOM DE REGISTRO
-         * ================================================
+         * ====================================================
+         * SOM BONITO DE CONFIRMAÇÃO
+         * ====================================================
          */
 
         successSound();
@@ -2655,12 +2819,17 @@ async function registerPoint() {
         );
 
 
+        /*
+         * EFEITO VISUAL
+         */
+
         document
             .getElementById(
                 "main-card"
             )
             .classList.add(
-                "pulse-success"
+                "pulse-success",
+                "success-glow"
             );
 
 
@@ -2672,7 +2841,8 @@ async function registerPoint() {
                         "main-card"
                     )
                     .classList.remove(
-                        "pulse-success"
+                        "pulse-success",
+                        "success-glow"
                     );
 
             },
@@ -2762,7 +2932,7 @@ function generateId() {
 
 
 /* ============================================================
-   ABRIR SENHA
+   SENHA ADMIN
 ============================================================ */
 
 btnAdmin.addEventListener(
@@ -2830,7 +3000,7 @@ function closePassword() {
 
 
 /* ============================================================
-   VERIFICAR SENHA
+   LOGIN ADMIN
 ============================================================ */
 
 btnPasswordEnter.addEventListener(
@@ -2886,11 +3056,7 @@ function checkPassword() {
         renderAdmin();
 
 
-        beep(
-            1000,
-            500,
-            0.8
-        );
+        adminSound();
 
     }
 
@@ -2989,6 +3155,9 @@ async function registerEmployee() {
         );
 
 
+        errorSound();
+
+
         return;
 
     }
@@ -3011,6 +3180,9 @@ async function registerEmployee() {
             "Essa matrícula já está cadastrada.",
             "error"
         );
+
+
+        errorSound();
 
 
         return;
@@ -3184,7 +3356,6 @@ function showRegisterStatus(
 
     }
 
-
     else if (
         type === "error"
     ) {
@@ -3195,7 +3366,6 @@ function showRegisterStatus(
         );
 
     }
-
 
     else {
 
@@ -3220,7 +3390,7 @@ function showRegisterStatus(
 
 
 /* ============================================================
-   ADMIN
+   RENDER ADMIN
 ============================================================ */
 
 function renderAdmin() {
@@ -3360,10 +3530,6 @@ function renderAdmin() {
     }
 
 
-
-    /* ========================================================
-       HISTÓRICO
-    ========================================================= */
 
     historyList.innerHTML =
         "";
@@ -3562,12 +3728,15 @@ function deleteEmployee(
         `Funcionário excluído: ${employee.name}`
     );
 
+
+    errorSound();
+
 }
 
 
 
 /* ============================================================
-   GERAR PDF
+   PDF
 ============================================================ */
 
 function createPDF() {
@@ -3602,10 +3771,6 @@ function createPDF() {
     const now =
         new Date();
 
-
-    /*
-     * CABEÇALHO
-     */
 
     doc.setFontSize(
         20
@@ -3651,10 +3816,6 @@ function createPDF() {
     );
 
 
-    /*
-     * RESUMO
-     */
-
     doc.setFontSize(
         11
     );
@@ -3673,10 +3834,6 @@ function createPDF() {
         59
     );
 
-
-    /*
-     * TABELA
-     */
 
     let y =
         72;
@@ -3737,10 +3894,6 @@ function createPDF() {
     y +=
         7;
 
-
-    /*
-     * REGISTROS
-     */
 
     records.forEach(
         record => {
@@ -3818,10 +3971,6 @@ function createPDF() {
     );
 
 
-    /*
-     * RODAPÉ
-     */
-
     const pages =
         doc.getNumberOfPages();
 
@@ -3892,11 +4041,7 @@ btnPdf.addEventListener(
         );
 
 
-        beep(
-            1000,
-            500,
-            0.8
-        );
+        successSound();
 
     }
 );
@@ -3952,10 +4097,6 @@ btnSharePdf.addEventListener(
             );
 
 
-        /*
-         * COMPARTILHAMENTO NATIVO
-         */
-
         if (
             navigator.share &&
             navigator.canShare &&
@@ -3983,11 +4124,7 @@ btnSharePdf.addEventListener(
                 });
 
 
-                beep(
-                    1000,
-                    500,
-                    0.8
-                );
+                successSound();
 
 
                 return;
@@ -3995,7 +4132,7 @@ btnSharePdf.addEventListener(
             }
 
 
-            catch (error) {
+            catch {
 
                 return;
 
@@ -4004,17 +4141,13 @@ btnSharePdf.addEventListener(
         }
 
 
-        /*
-         * FALLBACK
-         */
-
         doc.save(
             filename
         );
 
 
         alert(
-            "Seu navegador não permite compartilhar arquivos diretamente. O PDF foi baixado."
+            "O navegador não permite compartilhamento direto. O PDF foi baixado."
         );
 
     }
@@ -4023,7 +4156,7 @@ btnSharePdf.addEventListener(
 
 
 /* ============================================================
-   EXPORTAR CSV
+   CSV
 ============================================================ */
 
 btnExport.addEventListener(
@@ -4154,6 +4287,9 @@ btnExport.addEventListener(
             url
         );
 
+
+        successSound();
+
     }
 );
 
@@ -4241,7 +4377,7 @@ function escapeHtml(
 
 
 /* ============================================================
-   MONITORAR ROSTO
+   MONITORAMENTO DO ROSTO
 ============================================================ */
 
 let lastCheck =
@@ -4346,7 +4482,6 @@ async function monitorFace() {
         }
 
     }
-
 
     catch {
 
