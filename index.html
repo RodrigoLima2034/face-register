@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="theme-color"
-        content="#020617"
-    >
+    <meta name="theme-color"
+          content="#020617">
 
     <title>Ponto Facial</title>
 
@@ -20,6 +17,9 @@
 
     <!-- Face API -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
 
@@ -31,12 +31,15 @@
             margin: 0;
             font-family:
                 Inter,
-                ui-sans-serif,
                 system-ui,
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
                 sans-serif;
+        }
+
+        video {
+            transform: scaleX(-1);
         }
 
         .scanner-line {
@@ -69,3251 +72,233 @@
             }
         }
 
-        .pulse-border {
-            animation: pulseBorder 2s infinite;
-        }
-
-        @keyframes pulseBorder {
-
-            0%,
-            100% {
-                opacity: .35;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        .loading-dot {
-            animation: loadingDot 1.2s infinite;
-        }
-
-        @keyframes loadingDot {
-
-            0%,
-            100% {
-                opacity: .3;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        video {
-            transform: scaleX(-1);
-        }
-
     </style>
 </head>
 
+
 <body class="bg-slate-950 text-white min-h-screen flex flex-col">
 
-    <!-- =========================================================
-         HEADER
-    ========================================================== -->
 
-    <header
-        class="
-            sticky
-            top-0
-            z-50
-            border-b
-            border-slate-800
-            bg-slate-950/90
-            backdrop-blur-xl
-        "
-    >
+<!-- =========================================================
+     HEADER
+========================================================= -->
 
-        <div
-            class="
-                max-w-5xl
-                mx-auto
-                px-4
-                py-4
-                flex
-                items-center
-                justify-between
-            "
-        >
+<header class="
+    sticky
+    top-0
+    z-50
+    border-b
+    border-slate-800
+    bg-slate-950/90
+    backdrop-blur-xl
+">
 
-            <div class="flex items-center gap-3">
+    <div class="
+        max-w-5xl
+        mx-auto
+        px-4
+        py-4
+        flex
+        items-center
+        justify-between
+    ">
 
-                <div
-                    class="
-                        w-3
-                        h-3
-                        rounded-full
-                        bg-emerald-400
-                        animate-pulse
-                    "
-                ></div>
+        <div class="flex items-center gap-3">
 
-                <div>
+            <div class="
+                w-3
+                h-3
+                rounded-full
+                bg-emerald-400
+                animate-pulse
+            "></div>
 
-                    <div
-                        class="
-                            font-bold
-                            tracking-widest
-                            text-emerald-400
-                        "
-                    >
-                        PONTO FACIAL
-                    </div>
+            <div>
 
-                    <div
-                        class="
-                            text-[10px]
-                            text-slate-500
-                            tracking-widest
-                        "
-                    >
-                        RECONHECIMENTO LOCAL
-                    </div>
-
+                <div class="
+                    font-bold
+                    tracking-widest
+                    text-emerald-400
+                ">
+                    PONTO FACIAL
                 </div>
 
-            </div>
+                <div class="
+                    text-[10px]
+                    text-slate-500
+                    tracking-widest
+                ">
+                    RECONHECIMENTO LOCAL
+                </div>
 
-            <div
-                id="clock"
-                class="
-                    font-mono
-                    text-sm
-                    text-slate-400
-                "
-            >
-                00:00:00
             </div>
 
         </div>
 
-    </header>
-
-
-    <!-- =========================================================
-         CONTEÚDO
-    ========================================================== -->
-
-    <main
-        class="
-            flex-1
-            w-full
-            max-w-md
-            mx-auto
-            px-4
-            py-8
-        "
-    >
-
-        <section
-            class="
-                bg-slate-900/70
-                border
-                border-slate-800
-                rounded-3xl
-                p-5
-                shadow-2xl
-            "
-        >
-
-            <!-- Status superior -->
-
-            <div
-                class="
-                    flex
-                    items-center
-                    justify-between
-                    mb-4
-                    text-[10px]
-                    font-mono
-                    tracking-widest
-                "
-            >
-
-                <span class="text-slate-500">
-                    TERMINAL 01
-                </span>
-
-                <span
-                    id="camera-status"
-                    class="text-slate-500"
-                >
-                    CÂMERA: AGUARDANDO
-                </span>
-
-            </div>
-
-
-            <!-- =================================================
-                 CÂMERA
-            ================================================== -->
-
-            <div
-                class="
-                    relative
-                    w-full
-                    aspect-[4/3]
-                    bg-black
-                    rounded-2xl
-                    overflow-hidden
-                    border
-                    border-slate-700
-                "
-            >
-
-                <video
-                    id="video"
-                    autoplay
-                    muted
-                    playsinline
-                    class="
-                        absolute
-                        inset-0
-                        w-full
-                        h-full
-                        object-cover
-                    "
-                ></video>
-
-
-                <!-- Área de reconhecimento -->
-
-                <div
-                    class="
-                        absolute
-                        inset-5
-                        pointer-events-none
-                    "
-                >
-
-                    <!-- Cantos -->
-
-                    <div
-                        class="
-                            absolute
-                            top-0
-                            left-0
-                            w-8
-                            h-8
-                            border-t-2
-                            border-l-2
-                            border-emerald-400
-                        "
-                    ></div>
-
-                    <div
-                        class="
-                            absolute
-                            top-0
-                            right-0
-                            w-8
-                            h-8
-                            border-t-2
-                            border-r-2
-                            border-emerald-400
-                        "
-                    ></div>
-
-                    <div
-                        class="
-                            absolute
-                            bottom-0
-                            left-0
-                            w-8
-                            h-8
-                            border-b-2
-                            border-l-2
-                            border-emerald-400
-                        "
-                    ></div>
-
-                    <div
-                        class="
-                            absolute
-                            bottom-0
-                            right-0
-                            w-8
-                            h-8
-                            border-b-2
-                            border-r-2
-                            border-emerald-400
-                        "
-                    ></div>
-
-
-                    <!-- Linha scanner -->
-
-                    <div
-                        id="scanner"
-                        class="
-                            hidden
-                            absolute
-                            left-[5%]
-                            right-[5%]
-                            h-px
-                            bg-emerald-400
-                            shadow-[0_0_12px_rgba(52,211,153,.9)]
-                            scanner-line
-                        "
-                    ></div>
-
-
-                    <!-- Texto câmera -->
-
-                    <div
-                        id="face-indicator"
-                        class="
-                            absolute
-                            bottom-3
-                            left-1/2
-                            -translate-x-1/2
-                            bg-black/70
-                            px-3
-                            py-1
-                            rounded-full
-                            text-[10px]
-                            font-mono
-                            text-slate-300
-                            whitespace-nowrap
-                        "
-                    >
-                        PROCURANDO ROSTO
-                    </div>
-
-                </div>
-
-
-                <!-- Erro câmera -->
-
-                <div
-                    id="camera-error"
-                    class="
-                        hidden
-                        absolute
-                        inset-0
-                        bg-black/90
-                        items-center
-                        justify-center
-                        text-center
-                        p-6
-                    "
-                >
-
-                    <div>
-
-                        <div
-                            class="
-                                text-rose-400
-                                text-3xl
-                                mb-3
-                            "
-                        >
-                            ⚠
-                        </div>
-
-                        <p
-                            id="camera-error-text"
-                            class="
-                                text-slate-300
-                                text-sm
-                                mb-4
-                            "
-                        >
-                            Não foi possível acessar a câmera.
-                        </p>
-
-                        <button
-                            id="btn-camera-retry"
-                            class="
-                                px-5
-                                py-3
-                                rounded-xl
-                                border
-                                border-slate-700
-                                hover:border-emerald-400
-                                transition
-                            "
-                        >
-                            TENTAR NOVAMENTE
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 INFORMAÇÕES
-            ================================================== -->
-
-            <div class="text-center mt-6">
-
-                <h1
-                    class="
-                        text-xl
-                        font-bold
-                    "
-                >
-                    Registro de Presença
-                </h1>
-
-                <p
-                    class="
-                        text-sm
-                        text-slate-500
-                        mt-2
-                    "
-                >
-                    Olhe diretamente para a câmera.
-                    Mantenha o rosto iluminado.
-                </p>
-
-            </div>
-
-
-            <!-- =================================================
-                 TIPO DE PONTO
-            ================================================== -->
-
-            <div class="mt-6">
-
-                <label
-                    class="
-                        block
-                        text-xs
-                        text-slate-500
-                        mb-2
-                    "
-                >
-                    TIPO DE REGISTRO
-                </label>
-
-                <select
-                    id="tipo-ponto"
-                    class="
-                        w-full
-                        bg-slate-950
-                        border
-                        border-slate-700
-                        rounded-xl
-                        px-4
-                        py-3
-                        outline-none
-                        focus:border-emerald-400
-                    "
-                >
-
-                    <option value="Entrada">
-                        Entrada
-                    </option>
-
-                    <option value="Saída">
-                        Saída
-                    </option>
-
-                    <option value="Início do intervalo">
-                        Início do intervalo
-                    </option>
-
-                    <option value="Fim do intervalo">
-                        Fim do intervalo
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- =================================================
-                 BOTÃO
-            ================================================== -->
-
-            <button
-                id="btn-capture"
-                disabled
-                class="
-                    w-full
-                    mt-4
-                    py-4
-                    rounded-2xl
-                    bg-emerald-400
-                    hover:bg-emerald-300
-                    text-slate-950
-                    font-bold
-                    transition
-                    disabled:bg-slate-800
-                    disabled:text-slate-500
-                    disabled:cursor-not-allowed
-                "
-            >
-                CARREGANDO...
-            </button>
-
-
-            <!-- =================================================
-                 STATUS
-            ================================================== -->
-
-            <div
-                id="status-box"
-                class="
-                    hidden
-                    mt-4
-                    p-4
-                    rounded-xl
-                    text-center
-                    text-sm
-                "
-            >
-
-                <span id="status-text"></span>
-
-            </div>
-
-
-            <!-- =================================================
-                 LOG
-            ================================================== -->
-
-            <div class="mt-6">
-
-                <div
-                    class="
-                        text-[10px]
-                        font-mono
-                        text-slate-600
-                        mb-2
-                        tracking-widest
-                    "
-                >
-                    SISTEMA
-                </div>
-
-                <div
-                    id="system-log"
-                    class="
-                        h-24
-                        overflow-auto
-                        bg-black/30
-                        border
-                        border-slate-800
-                        rounded-xl
-                        p-3
-                        text-[10px]
-                        font-mono
-                        text-slate-500
-                    "
-                ></div>
-
-            </div>
-
-
-            <!-- =================================================
-                 ADMINISTRAÇÃO
-            ================================================== -->
-
-            <button
-                id="btn-admin"
-                class="
-                    w-full
-                    mt-5
-                    py-3
-                    rounded-xl
-                    border
-                    border-slate-700
-                    text-slate-400
-                    hover:text-emerald-400
-                    hover:border-emerald-400
-                    transition
-                "
-            >
-                ADMINISTRAÇÃO
-            </button>
-
-        </section>
-
-    </main>
-
-
-    <!-- =========================================================
-         FOOTER
-    ========================================================== -->
-
-    <footer
-        class="
-            text-center
-            py-4
-            text-xs
-            text-slate-600
-            border-t
-            border-slate-800
-        "
-    >
-        © 2026 Sistema Integrado de Recursos Humanos
-    </footer>
-
-
-    <!-- =========================================================
-         MODAL ADMIN
-    ========================================================== -->
-
-    <div
-        id="admin-modal"
-        class="
-            hidden
-            fixed
-            inset-0
-            z-[100]
-            bg-black/80
-            backdrop-blur-sm
-            p-4
-            items-center
-            justify-center
-        "
-    >
-
         <div
+            id="clock"
             class="
-                w-full
-                max-w-lg
-                max-h-[90vh]
-                overflow-auto
-                bg-slate-900
-                border
-                border-slate-700
-                rounded-3xl
-                p-6
+                font-mono
+                text-sm
+                text-slate-400
             "
         >
-
-            <!-- Cabeçalho -->
-
-            <div
-                class="
-                    flex
-                    justify-between
-                    items-center
-                    mb-6
-                "
-            >
-
-                <div>
-
-                    <h2
-                        class="
-                            text-xl
-                            font-bold
-                        "
-                    >
-                        Administração
-                    </h2>
-
-                    <p
-                        class="
-                            text-xs
-                            text-slate-500
-                            mt-1
-                        "
-                    >
-                        Cadastro e registros
-                    </p>
-
-                </div>
-
-                <button
-                    id="btn-close-admin"
-                    class="
-                        text-2xl
-                        text-slate-500
-                        hover:text-white
-                    "
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <!-- =================================================
-                 CADASTRO
-            ================================================== -->
-
-            <div
-                class="
-                    border
-                    border-slate-800
-                    rounded-2xl
-                    p-4
-                "
-            >
-
-                <h3
-                    class="
-                        font-semibold
-                        mb-4
-                    "
-                >
-                    Cadastrar funcionário
-                </h3>
-
-
-                <input
-                    id="funcionario-nome"
-                    type="text"
-                    placeholder="Nome completo"
-                    class="
-                        w-full
-                        bg-slate-950
-                        border
-                        border-slate-700
-                        rounded-xl
-                        px-4
-                        py-3
-                        mb-3
-                        outline-none
-                        focus:border-emerald-400
-                    "
-                >
-
-
-                <input
-                    id="funcionario-id"
-                    type="text"
-                    placeholder="Matrícula / ID"
-                    class="
-                        w-full
-                        bg-slate-950
-                        border
-                        border-slate-700
-                        rounded-xl
-                        px-4
-                        py-3
-                        mb-3
-                        outline-none
-                        focus:border-emerald-400
-                    "
-                >
-
-
-                <p
-                    class="
-                        text-xs
-                        text-slate-500
-                        mb-4
-                    "
-                >
-                    O sistema fará 3 capturas do rosto:
-                    frente, esquerda e direita.
-                </p>
-
-
-                <button
-                    id="btn-register"
-                    class="
-                        w-full
-                        py-3
-                        rounded-xl
-                        bg-emerald-400
-                        text-slate-950
-                        font-bold
-                        hover:bg-emerald-300
-                        disabled:bg-slate-800
-                        disabled:text-slate-500
-                    "
-                >
-                    CADASTRAR ROSTO
-                </button>
-
-
-                <div
-                    id="register-status"
-                    class="
-                        hidden
-                        mt-4
-                        p-3
-                        rounded-xl
-                        text-sm
-                    "
-                ></div>
-
-            </div>
-
-
-            <!-- =================================================
-                 FUNCIONÁRIOS
-            ================================================== -->
-
-            <div class="mt-6">
-
-                <div
-                    class="
-                        flex
-                        justify-between
-                        items-center
-                        mb-3
-                    "
-                >
-
-                    <h3 class="font-semibold">
-                        Funcionários
-                    </h3>
-
-                    <span
-                        id="employee-count"
-                        class="
-                            text-xs
-                            text-slate-500
-                        "
-                    >
-                        0
-                    </span>
-
-                </div>
-
-
-                <div
-                    id="employee-list"
-                    class="space-y-2"
-                ></div>
-
-            </div>
-
-
-            <!-- =================================================
-                 HISTÓRICO
-            ================================================== -->
-
-            <div class="mt-6">
-
-                <div
-                    class="
-                        flex
-                        justify-between
-                        items-center
-                        mb-3
-                    "
-                >
-
-                    <h3 class="font-semibold">
-                        Registros
-                    </h3>
-
-                    <button
-                        id="btn-export"
-                        class="
-                            text-xs
-                            text-emerald-400
-                            hover:text-emerald-300
-                        "
-                    >
-                        EXPORTAR CSV
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="history-list"
-                    class="
-                        space-y-2
-                        max-h-64
-                        overflow-auto
-                    "
-                ></div>
-
-            </div>
-
-
-            <!-- =================================================
-                 LIMPAR
-            ================================================== -->
-
-            <button
-                id="btn-clear"
-                class="
-                    w-full
-                    mt-6
-                    py-3
-                    rounded-xl
-                    border
-                    border-rose-500/30
-                    text-rose-400
-                    hover:bg-rose-500/10
-                "
-            >
-                APAGAR TODOS OS DADOS
-            </button>
-
+            00:00:00
         </div>
 
     </div>
 
-
-    <!-- =========================================================
-         JAVASCRIPT
-    ========================================================== -->
-
-    <script>
-
-        /* ========================================================
-           CONFIGURAÇÃO
-        ======================================================== */
-
-        const MODEL_URL =
-            "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
-
-        /*
-         * Quanto MENOR a distância, mais parecido é o rosto.
-         *
-         * 0.45 = muito rigoroso
-         * 0.50 = rigoroso
-         * 0.55 = recomendado
-         * 0.60 = mais permissivo
-         *
-         * Vamos começar em 0.58.
-         */
-        const FACE_THRESHOLD = 0.58;
-
-
-        /*
-         * Chaves utilizadas no navegador.
-         */
-        const EMPLOYEE_STORAGE =
-            "PONTO_FACIAL_FUNCIONARIOS_V4";
-
-        const RECORD_STORAGE =
-            "PONTO_FACIAL_REGISTROS_V4";
-
-
-        /* ========================================================
-           ELEMENTOS
-        ======================================================== */
-
-        const video =
-            document.getElementById("video");
-
-        const btnCapture =
-            document.getElementById("btn-capture");
-
-        const btnAdmin =
-            document.getElementById("btn-admin");
-
-        const adminModal =
-            document.getElementById("admin-modal");
-
-        const btnCloseAdmin =
-            document.getElementById("btn-close-admin");
-
-        const cameraStatus =
-            document.getElementById("camera-status");
-
-        const cameraError =
-            document.getElementById("camera-error");
-
-        const cameraErrorText =
-            document.getElementById("camera-error-text");
-
-        const btnCameraRetry =
-            document.getElementById("btn-camera-retry");
-
-        const scanner =
-            document.getElementById("scanner");
-
-        const faceIndicator =
-            document.getElementById("face-indicator");
-
-        const statusBox =
-            document.getElementById("status-box");
-
-        const statusText =
-            document.getElementById("status-text");
-
-        const systemLog =
-            document.getElementById("system-log");
-
-        const btnRegister =
-            document.getElementById("btn-register");
-
-        const registerStatus =
-            document.getElementById("register-status");
-
-        const employeeList =
-            document.getElementById("employee-list");
-
-        const historyList =
-            document.getElementById("history-list");
-
-        const employeeCount =
-            document.getElementById("employee-count");
-
-        const inputName =
-            document.getElementById("funcionario-nome");
-
-        const inputId =
-            document.getElementById("funcionario-id");
-
-        const btnExport =
-            document.getElementById("btn-export");
-
-        const btnClear =
-            document.getElementById("btn-clear");
-
-
-        /* ========================================================
-           VARIÁVEIS
-        ======================================================== */
-
-        let cameraStream = null;
-
-        let modelsLoaded = false;
-
-        let cameraReady = false;
-
-        let processing = false;
-
-
-        /* ========================================================
-           RELÓGIO
-        ======================================================== */
-
-        function updateClock() {
-
-            const now =
-                new Date();
-
-            document.getElementById("clock").textContent =
-                now.toLocaleTimeString(
-                    "pt-BR"
-                );
-        }
-
-        updateClock();
-
-        setInterval(
-            updateClock,
-            1000
-        );
-
-
-        /* ========================================================
-           LOG
-        ======================================================== */
-
-        function log(message) {
-
-            const time =
-                new Date().toLocaleTimeString(
-                    "pt-BR"
-                );
-
-            const line =
-                document.createElement("div");
-
-            line.textContent =
-                `[${time}] ${message}`;
-
-            systemLog.appendChild(line);
-
-            systemLog.scrollTop =
-                systemLog.scrollHeight;
-        }
-
-
-        /* ========================================================
-           STATUS
-        ======================================================== */
-
-        function showStatus(
-            message,
-            type = "loading"
-        ) {
-
-            statusBox.className =
-                "mt-4 p-4 rounded-xl text-center text-sm";
-
-            if (type === "success") {
-
-                statusBox.classList.add(
-                    "bg-emerald-500/10",
-                    "text-emerald-400",
-                    "border",
-                    "border-emerald-500/20"
-                );
-
-            } else if (type === "error") {
-
-                statusBox.classList.add(
-                    "bg-rose-500/10",
-                    "text-rose-400",
-                    "border",
-                    "border-rose-500/20"
-                );
-
-            } else {
-
-                statusBox.classList.add(
-                    "bg-slate-800",
-                    "text-slate-300",
-                    "border",
-                    "border-slate-700"
-                );
-
-            }
-
-            statusText.textContent =
-                message;
-
-            statusBox.classList.remove(
-                "hidden"
-            );
-        }
-
-
-        function hideStatus() {
-
-            statusBox.classList.add(
-                "hidden"
-            );
-        }
-
-
-        /* ========================================================
-           STATUS CADASTRO
-        ======================================================== */
-
-        function showRegisterStatus(
-            message,
-            type = "loading"
-        ) {
-
-            registerStatus.className =
-                "mt-4 p-3 rounded-xl text-sm";
-
-            if (type === "success") {
-
-                registerStatus.classList.add(
-                    "bg-emerald-500/10",
-                    "text-emerald-400"
-                );
-
-            } else if (type === "error") {
-
-                registerStatus.classList.add(
-                    "bg-rose-500/10",
-                    "text-rose-400"
-                );
-
-            } else {
-
-                registerStatus.classList.add(
-                    "bg-slate-800",
-                    "text-slate-300"
-                );
-
-            }
-
-            registerStatus.textContent =
-                message;
-
-            registerStatus.classList.remove(
-                "hidden"
-            );
-        }
-
-
-        /* ========================================================
-           LOCAL STORAGE
-        ======================================================== */
-
-        function getEmployees() {
-
-            try {
-
-                return JSON.parse(
-                    localStorage.getItem(
-                        EMPLOYEE_STORAGE
-                    ) || "[]"
-                );
-
-            } catch {
-
-                return [];
-
-            }
-
-        }
-
-
-        function saveEmployees(
-            employees
-        ) {
-
-            localStorage.setItem(
-                EMPLOYEE_STORAGE,
-                JSON.stringify(
-                    employees
-                )
-            );
-
-        }
-
-
-        function getRecords() {
-
-            try {
-
-                return JSON.parse(
-                    localStorage.getItem(
-                        RECORD_STORAGE
-                    ) || "[]"
-                );
-
-            } catch {
-
-                return [];
-
-            }
-
-        }
-
-
-        function saveRecords(
-            records
-        ) {
-
-            localStorage.setItem(
-                RECORD_STORAGE,
-                JSON.stringify(
-                    records
-                )
-            );
-
-        }
-
-
-        /* ========================================================
-           CÂMERA
-        ======================================================== */
-
-        async function startCamera() {
-
-            cameraError.classList.add(
-                "hidden"
-            );
-
-            cameraError.classList.remove(
-                "flex"
-            );
-
-            cameraStatus.textContent =
-                "CÂMERA: CONECTANDO";
-
-            cameraStatus.className =
-                "text-yellow-400";
-
-            try {
-
-                if (
-                    !navigator.mediaDevices ||
-                    !navigator.mediaDevices.getUserMedia
-                ) {
-
-                    throw new Error(
-                        "Seu navegador não suporta acesso à câmera."
-                    );
-
-                }
-
-
-                if (cameraStream) {
-
-                    cameraStream
-                        .getTracks()
-                        .forEach(
-                            track =>
-                                track.stop()
-                        );
-
-                }
-
-
-                cameraStream =
-                    await navigator.mediaDevices
-                        .getUserMedia({
-
-                            video: {
-
-                                facingMode: {
-                                    ideal: "user"
-                                },
-
-                                width: {
-                                    ideal: 1280
-                                },
-
-                                height: {
-                                    ideal: 720
-                                },
-
-                                frameRate: {
-                                    ideal: 30
-                                }
-
-                            },
-
-                            audio: false
-
-                        });
-
-
-                video.srcObject =
-                    cameraStream;
-
-
-                await video.play();
-
-
-                cameraReady = true;
-
-
-                cameraStatus.textContent =
-                    "CÂMERA: ATIVA";
-
-                cameraStatus.className =
-                    "text-emerald-400";
-
-
-                log(
-                    "Câmera iniciada com sucesso."
-                );
-
-
-                updateButton();
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-                cameraReady =
-                    false;
-
-
-                cameraStatus.textContent =
-                    "CÂMERA: ERRO";
-
-                cameraStatus.className =
-                    "text-rose-400";
-
-
-                cameraErrorText.textContent =
-                    getCameraErrorMessage(
-                        error
-                    );
-
-
-                cameraError.classList.remove(
-                    "hidden"
-                );
-
-                cameraError.classList.add(
-                    "flex"
-                );
-
-
-                log(
-                    "Erro ao acessar câmera."
-                );
-
-            }
-
-        }
-
-
-        function getCameraErrorMessage(
-            error
-        ) {
-
-            if (
-                error &&
-                error.name ===
-                "NotAllowedError"
-            ) {
-
-                return "O acesso à câmera foi bloqueado. Clique no cadeado ao lado do endereço do site e permita a câmera.";
-
-            }
-
-
-            if (
-                error &&
-                error.name ===
-                "NotFoundError"
-            ) {
-
-                return "Nenhuma câmera foi encontrada neste dispositivo.";
-
-            }
-
-
-            if (
-                error &&
-                error.name ===
-                "NotReadableError"
-            ) {
-
-                return "A câmera está sendo usada por outro programa.";
-
-            }
-
-
-            return (
-                error?.message ||
-                "Não foi possível acessar a câmera."
-            );
-
-        }
-
-
-        btnCameraRetry.addEventListener(
-            "click",
-            startCamera
-        );
-
-
-        /* ========================================================
-           MODELOS FACIAIS
-        ======================================================== */
-
-        async function loadFaceModels() {
-
-            try {
-
-                showStatus(
-                    "Carregando reconhecimento facial...",
-                    "loading"
-                );
-
-
-                log(
-                    "Carregando detector facial..."
-                );
-
-
-                await faceapi.nets
-                    .tinyFaceDetector
-                    .loadFromUri(
-                        MODEL_URL
-                    );
-
-
-                log(
-                    "Carregando pontos do rosto..."
-                );
-
-
-                await faceapi.nets
-                    .faceLandmark68TinyNet
-                    .loadFromUri(
-                        MODEL_URL
-                    );
-
-
-                log(
-                    "Carregando reconhecimento facial..."
-                );
-
-
-                await faceapi.nets
-                    .faceRecognitionNet
-                    .loadFromUri(
-                        MODEL_URL
-                    );
-
-
-                modelsLoaded =
-                    true;
-
-
-                log(
-                    "Modelos faciais carregados."
-                );
-
-
-                showStatus(
-                    "Reconhecimento facial pronto.",
-                    "success"
-                );
-
-
-                updateButton();
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-                log(
-                    "ERRO: não foi possível carregar os modelos."
-                );
-
-
-                showStatus(
-                    "Não foi possível carregar o reconhecimento facial. Verifique sua internet e recarregue a página.",
-                    "error"
-                );
-
-
-                btnCapture.disabled =
-                    true;
-
-
-                btnCapture.textContent =
-                    "ERRO NO RECONHECIMENTO";
-
-            }
-
-        }
-
-
-        /* ========================================================
-           ATUALIZAR BOTÃO
-        ======================================================== */
-
-        function updateButton() {
-
-            if (
-                modelsLoaded &&
-                cameraReady &&
-                !processing
-            ) {
-
-                btnCapture.disabled =
-                    false;
-
-                btnCapture.textContent =
-                    "REGISTRAR PONTO";
-
-            }
-
-        }
-
-
-        /* ========================================================
-           DETECÇÃO FACIAL
-        ======================================================== */
-
-        async function detectFace() {
-
-            if (
-                !modelsLoaded ||
-                !cameraReady
-            ) {
-
-                return null;
-
-            }
-
-
-            if (
-                video.readyState <
-                HTMLMediaElement.HAVE_CURRENT_DATA
-            ) {
-
-                return null;
-
-            }
-
-
-            if (
-                video.videoWidth === 0 ||
-                video.videoHeight === 0
-            ) {
-
-                return null;
-
-            }
-
-
-            const detection =
-                await faceapi
-                    .detectSingleFace(
-                        video,
-                        new faceapi.TinyFaceDetectorOptions({
-
-                            inputSize: 416,
-
-                            scoreThreshold: 0.40
-
-                        })
-                    )
-                    .withFaceLandmarks(
-                        true
-                    )
-                    .withFaceDescriptor();
-
-
-            return detection;
-
-        }
-
-
-        /* ========================================================
-           AGUARDAR DETECÇÃO
-        ======================================================== */
-
-        async function captureFace(
-            attempts = 8
-        ) {
-
-            for (
-                let i = 0;
-                i < attempts;
-                i++
-            ) {
-
-                const detection =
-                    await detectFace();
-
-
-                if (
-                    detection &&
-                    detection.detection
-                ) {
-
-                    return detection;
-
-                }
-
-
-                await sleep(
-                    350
-                );
-
-            }
-
-
-            return null;
-
-        }
-
-
-        function sleep(
-            ms
-        ) {
-
-            return new Promise(
-                resolve =>
-                    setTimeout(
-                        resolve,
-                        ms
-                    )
-            );
-
-        }
-
-
-        /* ========================================================
-           DISTÂNCIA FACIAL
-        ======================================================== */
-
-        function euclideanDistance(
-            a,
-            b
-        ) {
-
-            let sum = 0;
-
-
-            for (
-                let i = 0;
-                i < a.length;
-                i++
-            ) {
-
-                const difference =
-                    a[i] - b[i];
-
-                sum +=
-                    difference *
-                    difference;
-
-            }
-
-
-            return Math.sqrt(
-                sum
-            );
-
-        }
-
-
-        /* ========================================================
-           COMPARAR ROSTO
-        ======================================================== */
-
-        function findBestEmployee(
-            descriptor
-        ) {
-
-            const employees =
-                getEmployees();
-
-
-            if (
-                employees.length === 0
-            ) {
-
-                return null;
-
-            }
-
-
-            let bestMatch =
-                null;
-
-
-            for (
-                const employee
-                of employees
-            ) {
-
-                if (
-                    !employee.descriptors ||
-                    employee.descriptors.length === 0
-                ) {
-
-                    continue;
-
-                }
-
-
-                const distances =
-                    employee.descriptors
-                        .map(
-                            savedDescriptor =>
-
-                                euclideanDistance(
-
-                                    descriptor,
-
-                                    savedDescriptor
-
-                                )
-                        )
-                        .sort(
-                            (a, b) =>
-                                a - b
-                        );
-
-
-                /*
-                 * Utilizamos as duas melhores
-                 * capturas do funcionário.
-                 *
-                 * Isso evita que uma única
-                 * captura ruim prejudique
-                 * o reconhecimento.
-                 */
-
-                const bestDistances =
-                    distances.slice(
-                        0,
-                        Math.min(
-                            2,
-                            distances.length
-                        )
-                    );
-
-
-                const average =
-                    bestDistances.reduce(
-                        (
-                            total,
-                            value
-                        ) =>
-                            total + value,
-                        0
-                    ) /
-                    bestDistances.length;
-
-
-                if (
-                    !bestMatch ||
-                    average <
-                    bestMatch.distance
-                ) {
-
-                    bestMatch = {
-
-                        employee,
-
-                        distance:
-                            average
-
-                    };
-
-                }
-
-            }
-
-
-            if (
-                !bestMatch
-            ) {
-
-                return null;
-
-            }
-
-
-            console.log(
-                "Melhor funcionário:",
-                bestMatch.employee.name
-            );
-
-            console.log(
-                "Distância:",
-                bestMatch.distance
-            );
-
-            console.log(
-                "Limite:",
-                FACE_THRESHOLD
-            );
-
-
-            if (
-                bestMatch.distance <=
-                FACE_THRESHOLD
-            ) {
-
-                return bestMatch;
-
-            }
-
-
-            return null;
-
-        }
-
-
-        /* ========================================================
-           REGISTRAR PONTO
-        ======================================================== */
-
-        btnCapture.addEventListener(
-            "click",
-            registerPoint
-        );
-
-
-        async function registerPoint() {
-
-            if (
-                processing
-            ) {
-
-                return;
-
-            }
-
-
-            const employees =
-                getEmployees();
-
-
-            if (
-                employees.length === 0
-            ) {
-
-                showStatus(
-                    "Nenhum funcionário cadastrado. Abra Administração e cadastre o rosto primeiro.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            processing =
-                true;
-
-
-            btnCapture.disabled =
-                true;
-
-
-            btnCapture.textContent =
-                "RECONHECENDO...";
-
-
-            scanner.classList.remove(
-                "hidden"
-            );
-
-
-            faceIndicator.textContent =
-                "ANALISANDO ROSTO";
-
-
-            showStatus(
-                "Olhe diretamente para a câmera...",
-                "loading"
-            );
-
-
-            try {
-
-                /*
-                 * Pequena espera para estabilizar
-                 * a imagem da câmera.
-                 */
-
-                await sleep(
-                    500
-                );
-
-
-                const detection =
-                    await captureFace(
-                        8
-                    );
-
-
-                if (
-                    !detection
-                ) {
-
-                    faceIndicator.textContent =
-                        "ROSTO NÃO DETECTADO";
-
-
-                    showStatus(
-                        "Não consegui detectar seu rosto. Fique de frente para a câmera, aproxime-se e procure um local bem iluminado.",
-                        "error"
-                    );
-
-
-                    log(
-                        "Nenhum rosto detectado."
-                    );
-
-
-                    return;
-
-                }
-
-
-                const confidence =
-                    detection.detection.score;
-
-
-                console.log(
-                    "Confiança da detecção:",
-                    confidence
-                );
-
-
-                faceIndicator.textContent =
-                    "ROSTO ENCONTRADO";
-
-
-                showStatus(
-                    "Comparando com os funcionários cadastrados...",
-                    "loading"
-                );
-
-
-                const descriptor =
-                    Array.from(
-                        detection.descriptor
-                    );
-
-
-                const match =
-                    findBestEmployee(
-                        descriptor
-                    );
-
-
-                if (
-                    !match
-                ) {
-
-                    faceIndicator.textContent =
-                        "NÃO RECONHECIDO";
-
-
-                    showStatus(
-                        "Rosto não reconhecido. Se você ainda não foi cadastrado, abra Administração e faça o cadastro facial.",
-                        "error"
-                    );
-
-
-                    log(
-                        "Rosto detectado, mas não reconhecido."
-                    );
-
-
-                    return;
-
-                }
-
-
-                /*
-                 * Funcionário encontrado.
-                 */
-
-                const employee =
-                    match.employee;
-
-
-                const now =
-                    new Date();
-
-
-                const record = {
-
-                    id:
-                        generateId(),
-
-                    funcionario_id:
-                        employee.id,
-
-                    funcionario_nome:
-                        employee.name,
-
-                    tipo:
-                        document.getElementById(
-                            "tipo-ponto"
-                        ).value,
-
-                    data:
-                        now.toLocaleDateString(
-                            "pt-BR"
-                        ),
-
-                    hora:
-                        now.toLocaleTimeString(
-                            "pt-BR"
-                        ),
-
-                    distance:
-                        Number(
-                            match.distance
-                                .toFixed(4)
-                        )
-
-                };
-
-
-                const records =
-                    getRecords();
-
-
-                records.push(
-                    record
-                );
-
-
-                saveRecords(
-                    records
-                );
-
-
-                faceIndicator.textContent =
-                    "RECONHECIDO ✓";
-
-
-                showStatus(
-                    `Ponto registrado para ${employee.name} às ${record.hora}.`,
-                    "success"
-                );
-
-
-                log(
-                    `Ponto registrado: ${employee.name} | ${record.tipo}`
-                );
-
-
-                /*
-                 * Pequeno bloqueio para
-                 * evitar clique duplicado.
-                 */
-
-                await sleep(
-                    1500
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                showStatus(
-                    "Ocorreu um erro durante o reconhecimento facial.",
-                    "error"
-                );
-
-
-                log(
-                    "Erro durante reconhecimento."
-                );
-
-            } finally {
-
-                processing =
-                    false;
-
-
-                scanner.classList.add(
-                    "hidden"
-                );
-
-
-                faceIndicator.textContent =
-                    "PROCURANDO ROSTO";
-
-
-                updateButton();
-
-            }
-
-        }
-
-
-        /* ========================================================
-           GERAR ID
-        ======================================================== */
-
-        function generateId() {
-
-            if (
-                crypto &&
-                crypto.randomUUID
-            ) {
-
-                return crypto.randomUUID();
-
-            }
-
-
-            return (
-                Date.now()
-                +
-                "-"
-                +
-                Math.random()
-                    .toString(36)
-                    .substring(2)
-            );
-
-        }
-
-
-        /* ========================================================
-           ADMIN MODAL
-        ======================================================== */
-
-        btnAdmin.addEventListener(
-            "click",
-            () => {
-
-                adminModal.classList.remove(
-                    "hidden"
-                );
-
-                adminModal.classList.add(
-                    "flex"
-                );
-
-                renderAdmin();
-
-            }
-        );
-
-
-        btnCloseAdmin.addEventListener(
-            "click",
-            closeAdmin
-        );
-
-
-        adminModal.addEventListener(
-            "click",
-            event => {
-
-                if (
-                    event.target ===
-                    adminModal
-                ) {
-
-                    closeAdmin();
-
-                }
-
-            }
-        );
-
-
-        function closeAdmin() {
-
-            adminModal.classList.add(
-                "hidden"
-            );
-
-            adminModal.classList.remove(
-                "flex"
-            );
-
-        }
-
-
-        /* ========================================================
-           CADASTRO FACIAL
-        ======================================================== */
-
-        btnRegister.addEventListener(
-            "click",
-            registerEmployee
-        );
-
-
-        async function registerEmployee() {
-
-            if (
-                !modelsLoaded
-            ) {
-
-                showRegisterStatus(
-                    "O reconhecimento facial ainda está carregando.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            if (
-                !cameraReady
-            ) {
-
-                showRegisterStatus(
-                    "A câmera não está disponível.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            const name =
-                inputName.value.trim();
-
-
-            const id =
-                inputId.value.trim();
-
-
-            if (
-                !name ||
-                !id
-            ) {
-
-                showRegisterStatus(
-                    "Informe o nome e a matrícula.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            const employees =
-                getEmployees();
-
-
-            const alreadyExists =
-                employees.some(
-                    employee =>
-                        employee.id
-                            .toLowerCase() ===
-                        id.toLowerCase()
-                );
-
-
-            if (
-                alreadyExists
-            ) {
-
-                showRegisterStatus(
-                    "Essa matrícula já está cadastrada.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            btnRegister.disabled =
-                true;
-
-
-            /*
-             * Guardaremos 5 capturas.
-             *
-             * Isso deixa o reconhecimento
-             * bem mais confiável.
-             */
-
-            const descriptors = [];
-
-
-            try {
-
-                /*
-                 * CAPTURA 1
-                 */
-
-                showRegisterStatus(
-                    "Captura 1 de 5: olhe diretamente para a câmera."
-                );
-
-
-                await sleep(
-                    1000
-                );
-
-
-                let capture =
-                    await captureFace(
-                        10
-                    );
-
-
-                if (
-                    !capture
-                ) {
-
-                    throw new Error(
-                        "Não consegui detectar seu rosto na primeira captura."
-                    );
-
-                }
-
-
-                descriptors.push(
-                    Array.from(
-                        capture.descriptor
-                    )
-                );
-
-
-                /*
-                 * CAPTURA 2
-                 */
-
-                showRegisterStatus(
-                    "Captura 2 de 5: vire levemente o rosto para a esquerda."
-                );
-
-
-                await sleep(
-                    1200
-                );
-
-
-                capture =
-                    await captureFace(
-                        10
-                    );
-
-
-                if (
-                    !capture
-                ) {
-
-                    throw new Error(
-                        "Não consegui detectar seu rosto na segunda captura."
-                    );
-
-                }
-
-
-                descriptors.push(
-                    Array.from(
-                        capture.descriptor
-                    )
-                );
-
-
-                /*
-                 * CAPTURA 3
-                 */
-
-                showRegisterStatus(
-                    "Captura 3 de 5: vire levemente o rosto para a direita."
-                );
-
-
-                await sleep(
-                    1200
-                );
-
-
-                capture =
-                    await captureFace(
-                        10
-                    );
-
-
-                if (
-                    !capture
-                ) {
-
-                    throw new Error(
-                        "Não consegui detectar seu rosto na terceira captura."
-                    );
-
-                }
-
-
-                descriptors.push(
-                    Array.from(
-                        capture.descriptor
-                    )
-                );
-
-
-                /*
-                 * CAPTURA 4
-                 */
-
-                showRegisterStatus(
-                    "Captura 4 de 5: volte a olhar para frente."
-                );
-
-
-                await sleep(
-                    1200
-                );
-
-
-                capture =
-                    await captureFace(
-                        10
-                    );
-
-
-                if (
-                    !capture
-                ) {
-
-                    throw new Error(
-                        "Não consegui detectar seu rosto na quarta captura."
-                    );
-
-                }
-
-
-                descriptors.push(
-                    Array.from(
-                        capture.descriptor
-                    )
-                );
-
-
-                /*
-                 * CAPTURA 5
-                 */
-
-                showRegisterStatus(
-                    "Captura 5 de 5: mantenha o rosto parado."
-                );
-
-
-                await sleep(
-                    1200
-                );
-
-
-                capture =
-                    await captureFace(
-                        10
-                    );
-
-
-                if (
-                    !capture
-                ) {
-
-                    throw new Error(
-                        "Não consegui detectar seu rosto na quinta captura."
-                    );
-
-                }
-
-
-                descriptors.push(
-                    Array.from(
-                        capture.descriptor
-                    )
-                );
-
-
-                /*
-                 * Salvar funcionário.
-                 */
-
-                const employee = {
-
-                    id,
-
-                    name,
-
-                    descriptors,
-
-                    createdAt:
-                        new Date()
-                            .toISOString()
-
-                };
-
-
-                employees.push(
-                    employee
-                );
-
-
-                saveEmployees(
-                    employees
-                );
-
-
-                inputName.value =
-                    "";
-
-                inputId.value =
-                    "";
-
-
-                showRegisterStatus(
-                    `${name} foi cadastrado com sucesso!`,
-                    "success"
-                );
-
-
-                log(
-                    `Funcionário cadastrado: ${name}`
-                );
-
-
-                renderAdmin();
-
-
-            } catch (error) {
-
-                console.error(
-                    error
-                );
-
-
-                showRegisterStatus(
-                    error.message,
-                    "error"
-                );
-
-
-                log(
-                    "Falha no cadastro facial."
-                );
-
-            } finally {
-
-                btnRegister.disabled =
-                    false;
-
-            }
-
-        }
-
-
-        /* ========================================================
-           RENDER ADMIN
-        ======================================================== */
-
-        function renderAdmin() {
-
-            const employees =
-                getEmployees();
-
-
-            employeeCount.textContent =
-                employees.length;
-
-
-            /*
-             * Funcionários
-             */
-
-            employeeList.innerHTML =
-                "";
-
-
-            if (
-                employees.length === 0
-            ) {
-
-                employeeList.innerHTML = `
-                    <div
-                        class="
-                            p-4
-                            rounded-xl
-                            bg-slate-950
-                            text-sm
-                            text-slate-500
-                        "
-                    >
-                        Nenhum funcionário cadastrado.
-                    </div>
-                `;
-
-            } else {
-
-                employees.forEach(
-                    employee => {
-
-                        const item =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        item.className =
-                            `
-                            bg-slate-950
-                            border
-                            border-slate-800
-                            rounded-xl
-                            p-4
-                            flex
-                            items-center
-                            justify-between
-                            gap-3
-                            `;
-
-
-                        item.innerHTML = `
-
-                            <div>
-
-                                <div
-                                    class="
-                                        font-semibold
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        employee.name
-                                    )}
-                                </div>
-
-                                <div
-                                    class="
-                                        text-xs
-                                        text-slate-500
-                                        mt-1
-                                    "
-                                >
-                                    ID:
-                                    ${escapeHtml(
-                                        employee.id
-                                    )}
-
-                                    ·
-
-                                    ${employee.descriptors?.length || 0}
-                                    capturas
-                                </div>
-
-                            </div>
-
-                            <button
-                                class="
-                                    delete-employee
-                                    text-xs
-                                    text-rose-400
-                                    hover:text-rose-300
-                                "
-                                data-id="${escapeHtml(
-                                    employee.id
-                                )}"
-                            >
-                                EXCLUIR
-                            </button>
-
-                        `;
-
-
-                        employeeList.appendChild(
-                            item
-                        );
-
-                    }
-                );
-
-
-                document
-                    .querySelectorAll(
-                        ".delete-employee"
-                    )
-                    .forEach(
-                        button => {
-
-                            button.addEventListener(
-                                "click",
-                                () =>
-                                    deleteEmployee(
-                                        button.dataset.id
-                                    )
-                            );
-
-                        }
-                    );
-
-            }
-
-
-            /*
-             * Histórico
-             */
-
-            const records =
-                getRecords()
-                    .slice()
-                    .reverse();
-
-
-            historyList.innerHTML =
-                "";
-
-
-            if (
-                records.length === 0
-            ) {
-
-                historyList.innerHTML = `
-                    <div
-                        class="
-                            p-4
-                            rounded-xl
-                            bg-slate-950
-                            text-sm
-                            text-slate-500
-                        "
-                    >
-                        Nenhum ponto registrado.
-                    </div>
-                `;
-
-            } else {
-
-                records.forEach(
-                    record => {
-
-                        const item =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        item.className =
-                            `
-                            bg-slate-950
-                            border
-                            border-slate-800
-                            rounded-xl
-                            p-3
-                            flex
-                            justify-between
-                            gap-3
-                            `;
-
-
-                        item.innerHTML = `
-
-                            <div>
-
-                                <div
-                                    class="
-                                        font-semibold
-                                        text-sm
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        record.funcionario_nome
-                                    )}
-                                </div>
-
-                                <div
-                                    class="
-                                        text-[10px]
-                                        text-slate-600
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        record.funcionario_id
-                                    )}
-                                </div>
-
-                            </div>
-
-                            <div
-                                class="
-                                    text-right
-                                    text-xs
-                                "
-                            >
-
-                                <div
-                                    class="
-                                        text-emerald-400
-                                        font-mono
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        record.hora
-                                    )}
-                                </div>
-
-                                <div
-                                    class="
-                                        text-slate-500
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        record.tipo
-                                    )}
-                                </div>
-
-                                <div
-                                    class="
-                                        text-slate-600
-                                    "
-                                >
-                                    ${escapeHtml(
-                                        record.data
-                                    )}
-                                </div>
-
-                            </div>
-
-                        `;
-
-
-                        historyList.appendChild(
-                            item
-                        );
-
-                    }
-                );
-
-            }
-
-        }
-
-
-        /* ========================================================
-           EXCLUIR FUNCIONÁRIO
-        ======================================================== */
-
-        function deleteEmployee(
-            employeeId
-        ) {
-
-            const employees =
-                getEmployees();
-
-
-            const employee =
-                employees.find(
-                    item =>
-                        item.id ===
-                        employeeId
-                );
-
-
-            if (
-                !employee
-            ) {
-
-                return;
-
-            }
-
-
-            const confirmed =
-                confirm(
-                    `Excluir ${employee.name}?`
-                );
-
-
-            if (
-                !confirmed
-            ) {
-
-                return;
-
-            }
-
-
-            const updated =
-                employees.filter(
-                    item =>
-                        item.id !==
-                        employeeId
-                );
-
-
-            saveEmployees(
-                updated
-            );
-
-
-            renderAdmin();
-
-
-            log(
-                `Funcionário excluído: ${employee.name}`
-            );
-
-        }
-
-
-        /* ========================================================
-           EXPORTAR CSV
-        ======================================================== */
-
-        btnExport.addEventListener(
-            "click",
-            exportCSV
-        );
-
-
-        function exportCSV() {
-
-            const records =
-                getRecords();
-
-
-            if (
-                records.length === 0
-            ) {
-
-                alert(
-                    "Não existem registros para exportar."
-                );
-
-                return;
-
-            }
-
-
-            const header = [
-
-                "ID",
-
-                "Funcionario ID",
-
-                "Funcionario",
-
-                "Tipo",
-
-                "Data",
-
-                "Hora",
-
-                "Distancia"
-
-            ];
-
-
-            const rows =
-                records.map(
-                    record => [
-
-                        record.id,
-
-                        record.funcionario_id,
-
-                        record.funcionario_nome,
-
-                        record.tipo,
-
-                        record.data,
-
-                        record.hora,
-
-                        record.distance
-
-                    ]
-                );
-
-
-            const csv =
-                [
-                    header,
-                    ...rows
-                ]
-                .map(
-                    row =>
-                        row
-                            .map(
-                                value =>
-                                    `"${String(value)
-                                        .replaceAll(
-                                            '"',
-                                            '""'
-                                        )}"`
-                            )
-                            .join(";")
-                )
-                .join("\n");
-
-
-            const blob =
-                new Blob(
-                    [
-                        "\uFEFF" +
-                        csv
-                    ],
-                    {
-                        type:
-                            "text/csv;charset=utf-8"
-                    }
-                );
-
-
-            const url =
-                URL.createObjectURL(
-                    blob
-                );
-
-
-            const link =
-                document.createElement(
-                    "a"
-                );
-
-
-            link.href =
-                url;
-
-
-            link.download =
-                "pontos-faciais.csv";
-
-
-            link.click();
-
-
-            URL.revokeObjectURL(
-                url
-            );
-
-        }
-
-
-        /* ========================================================
-           APAGAR DADOS
-        ======================================================== */
-
-        btnClear.addEventListener(
-            "click",
-            () => {
-
-                const confirmed =
-                    confirm(
-                        "ATENÇÃO!\n\nIsso apagará TODOS os funcionários e TODOS os registros deste navegador.\n\nDeseja continuar?"
-                    );
-
-
-                if (
-                    !confirmed
-                ) {
-
-                    return;
-
-                }
-
-
-                localStorage.removeItem(
-                    EMPLOYEE_STORAGE
-                );
-
-
-                localStorage.removeItem(
-                    RECORD_STORAGE
-                );
-
-
-                renderAdmin();
-
-
-                log(
-                    "Todos os dados foram apagados."
-                );
-
-
-                showStatus(
-                    "Todos os dados foram apagados deste navegador.",
-                    "success"
-                );
-
-            }
-        );
-
-
-        /* ========================================================
-           SEGURANÇA HTML
-        ======================================================== */
-
-        function escapeHtml(
-            value
-        ) {
-
-            return String(
-                value
-            )
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-
-        }
-
-
-        /* ========================================================
-           MONITORAMENTO DO ROSTO
-        ======================================================== */
-
-        let lastFaceCheck =
-            0;
-
-
-        async function monitorFace() {
-
-            if (
-                !modelsLoaded ||
-                !cameraReady ||
-                processing
-            ) {
-
-                requestAnimationFrame(
-                    monitorFace
-                );
-
-                return;
-
-            }
-
-
-            const now =
-                Date.now();
-
-
-            /*
-             * Não verifica todos os frames.
-             * Faz aproximadamente 2 verificações
-             * por segundo.
-             */
-
-            if (
-                now - lastFaceCheck <
-                500
-            ) {
-
-                requestAnimationFrame(
-                    monitorFace
-                );
-
-                return;
-
-            }
-
-
-            lastFaceCheck =
-                now;
-
-
-            try {
-
-                const detection =
-                    await detectFace();
-
-
-                if (
-                    detection
-                ) {
-
-                    faceIndicator.textContent =
-                        "ROSTO DETECTADO ✓";
-
-                    faceIndicator.className =
-                        `
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="
+    flex-1
+    w-full
+    max-w-md
+    mx-auto
+    px-4
+    py-8
+">
+
+    <section class="
+        bg-slate-900/70
+        border
+        border-slate-800
+        rounded-3xl
+        p-5
+        shadow-2xl
+    ">
+
+
+        <!-- STATUS -->
+
+        <div class="
+            flex
+            items-center
+            justify-between
+            mb-4
+            text-[10px]
+            font-mono
+            tracking-widest
+        ">
+
+            <span class="text-slate-500">
+                TERMINAL 01
+            </span>
+
+            <span
+                id="camera-status"
+                class="text-slate-500"
+            >
+                CÂMERA: AGUARDANDO
+            </span>
+
+        </div>
+
+
+        <!-- =====================================================
+             CAMERA
+        ====================================================== -->
+
+        <div class="
+            relative
+            w-full
+            aspect-[4/3]
+            bg-black
+            rounded-2xl
+            overflow-hidden
+            border
+            border-slate-700
+        ">
+
+            <video
+                id="video"
+                autoplay
+                muted
+                playsinline
+                class="
+                    absolute
+                    inset-0
+                    w-full
+                    h-full
+                    object-cover
+                "
+            ></video>
+
+
+            <div class="
+                absolute
+                inset-5
+                pointer-events-none
+            ">
+
+                <div class="
+                    absolute
+                    top-0
+                    left-0
+                    w-8
+                    h-8
+                    border-t-2
+                    border-l-2
+                    border-emerald-400
+                "></div>
+
+                <div class="
+                    absolute
+                    top-0
+                    right-0
+                    w-8
+                    h-8
+                    border-t-2
+                    border-r-2
+                    border-emerald-400
+                "></div>
+
+                <div class="
+                    absolute
+                    bottom-0
+                    left-0
+                    w-8
+                    h-8
+                    border-b-2
+                    border-l-2
+                    border-emerald-400
+                "></div>
+
+                <div class="
+                    absolute
+                    bottom-0
+                    right-0
+                    w-8
+                    h-8
+                    border-b-2
+                    border-r-2
+                    border-emerald-400
+                "></div>
+
+
+                <div
+                    id="scanner"
+                    class="
+                        hidden
                         absolute
-                        bottom-3
-                        left-1/2
-                        -translate-x-1/2
-                        bg-emerald-500/80
-                        px-3
-                        py-1
-                        rounded-full
-                        text-[10px]
-                        font-mono
-                        text-black
-                        whitespace-nowrap
-                        `;
+                        left-[5%]
+                        right-[5%]
+                        h-px
+                        bg-emerald-400
+                        shadow-[0_0_12px_rgba(52,211,153,.9)]
+                        scanner-line
+                    "
+                ></div>
 
-                } else {
 
-                    faceIndicator.textContent =
-                        "PROCURANDO ROSTO";
-
-                    faceIndicator.className =
-                        `
+                <div
+                    id="face-indicator"
+                    class="
                         absolute
                         bottom-3
                         left-1/2
@@ -3326,125 +311,3347 @@
                         font-mono
                         text-slate-300
                         whitespace-nowrap
-                        `;
+                    "
+                >
+                    PROCURANDO ROSTO
+                </div>
 
-                }
-
-            } catch {
-
-                // Ignora erros momentâneos
-                // da detecção.
-
-            }
+            </div>
 
 
-            requestAnimationFrame(
-                monitorFace
-            );
+            <div
+                id="camera-error"
+                class="
+                    hidden
+                    absolute
+                    inset-0
+                    bg-black/90
+                    items-center
+                    justify-center
+                    text-center
+                    p-6
+                "
+            >
+
+                <div>
+
+                    <div class="
+                        text-rose-400
+                        text-3xl
+                        mb-3
+                    ">
+                        ⚠
+                    </div>
+
+                    <p
+                        id="camera-error-text"
+                        class="
+                            text-slate-300
+                            text-sm
+                            mb-4
+                        "
+                    >
+                        Não foi possível acessar a câmera.
+                    </p>
+
+                    <button
+                        id="btn-camera-retry"
+                        class="
+                            px-5
+                            py-3
+                            rounded-xl
+                            border
+                            border-slate-700
+                            hover:border-emerald-400
+                        "
+                    >
+                        TENTAR NOVAMENTE
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- INSTRUÇÃO -->
+
+        <div class="text-center mt-6">
+
+            <h1 class="text-xl font-bold">
+                Registro de Presença
+            </h1>
+
+            <p class="
+                text-sm
+                text-slate-500
+                mt-2
+            ">
+                Olhe diretamente para a câmera.
+                Mantenha o rosto iluminado.
+            </p>
+
+        </div>
+
+
+        <!-- TIPO -->
+
+        <div class="mt-6">
+
+            <label class="
+                block
+                text-xs
+                text-slate-500
+                mb-2
+            ">
+                TIPO DE REGISTRO
+            </label>
+
+            <select
+                id="tipo-ponto"
+                class="
+                    w-full
+                    bg-slate-950
+                    border
+                    border-slate-700
+                    rounded-xl
+                    px-4
+                    py-3
+                    outline-none
+                    focus:border-emerald-400
+                "
+            >
+
+                <option value="Entrada">
+                    Entrada
+                </option>
+
+                <option value="Saída">
+                    Saída
+                </option>
+
+                <option value="Início do intervalo">
+                    Início do intervalo
+                </option>
+
+                <option value="Fim do intervalo">
+                    Fim do intervalo
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- BOTÃO -->
+
+        <button
+            id="btn-capture"
+            disabled
+            class="
+                w-full
+                mt-4
+                py-4
+                rounded-2xl
+                bg-emerald-400
+                hover:bg-emerald-300
+                text-slate-950
+                font-bold
+                transition
+                disabled:bg-slate-800
+                disabled:text-slate-500
+                disabled:cursor-not-allowed
+            "
+        >
+            CARREGANDO...
+        </button>
+
+
+        <!-- STATUS -->
+
+        <div
+            id="status-box"
+            class="hidden mt-4 p-4 rounded-xl text-center text-sm"
+        >
+            <span id="status-text"></span>
+        </div>
+
+
+        <!-- LOG -->
+
+        <div class="mt-6">
+
+            <div class="
+                text-[10px]
+                font-mono
+                text-slate-600
+                mb-2
+                tracking-widest
+            ">
+                SISTEMA
+            </div>
+
+            <div
+                id="system-log"
+                class="
+                    h-24
+                    overflow-auto
+                    bg-black/30
+                    border
+                    border-slate-800
+                    rounded-xl
+                    p-3
+                    text-[10px]
+                    font-mono
+                    text-slate-500
+                "
+            ></div>
+
+        </div>
+
+
+        <!-- ADMIN -->
+
+        <button
+            id="btn-admin"
+            class="
+                w-full
+                mt-5
+                py-3
+                rounded-xl
+                border
+                border-slate-700
+                text-slate-400
+                hover:text-emerald-400
+                hover:border-emerald-400
+                transition
+            "
+        >
+            🔐 ADMINISTRAÇÃO
+        </button>
+
+    </section>
+
+</main>
+
+
+<footer class="
+    text-center
+    py-4
+    text-xs
+    text-slate-600
+    border-t
+    border-slate-800
+">
+    © 2026 Sistema Integrado de Recursos Humanos
+</footer>
+
+
+
+<!-- =========================================================
+     MODAL SENHA
+========================================================= -->
+
+<div
+    id="password-modal"
+    class="
+        hidden
+        fixed
+        inset-0
+        z-[200]
+        bg-black/80
+        backdrop-blur-sm
+        p-4
+        items-center
+        justify-center
+    "
+>
+
+    <div class="
+        w-full
+        max-w-sm
+        bg-slate-900
+        border
+        border-slate-700
+        rounded-3xl
+        p-6
+    ">
+
+        <div class="text-center">
+
+            <div class="text-4xl mb-3">
+                🔐
+            </div>
+
+            <h2 class="text-xl font-bold">
+                Área Administrativa
+            </h2>
+
+            <p class="
+                text-sm
+                text-slate-500
+                mt-2
+            ">
+                Digite a senha para continuar.
+            </p>
+
+        </div>
+
+
+        <input
+            id="admin-password"
+            type="password"
+            placeholder="Senha"
+            autocomplete="current-password"
+            class="
+                w-full
+                mt-6
+                bg-slate-950
+                border
+                border-slate-700
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                focus:border-emerald-400
+            "
+        >
+
+
+        <div
+            id="password-error"
+            class="
+                hidden
+                text-rose-400
+                text-sm
+                text-center
+                mt-3
+            "
+        >
+            Senha incorreta.
+        </div>
+
+
+        <button
+            id="btn-password-enter"
+            class="
+                w-full
+                mt-4
+                py-3
+                rounded-xl
+                bg-emerald-400
+                text-slate-950
+                font-bold
+            "
+        >
+            ENTRAR
+        </button>
+
+
+        <button
+            id="btn-password-cancel"
+            class="
+                w-full
+                mt-2
+                py-3
+                text-slate-500
+            "
+        >
+            CANCELAR
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     ADMIN
+========================================================= -->
+
+<div
+    id="admin-modal"
+    class="
+        hidden
+        fixed
+        inset-0
+        z-[100]
+        bg-black/80
+        backdrop-blur-sm
+        p-4
+        items-center
+        justify-center
+    "
+>
+
+    <div class="
+        w-full
+        max-w-lg
+        max-h-[90vh]
+        overflow-auto
+        bg-slate-900
+        border
+        border-slate-700
+        rounded-3xl
+        p-6
+    ">
+
+        <div class="
+            flex
+            justify-between
+            items-center
+            mb-6
+        ">
+
+            <div>
+
+                <h2 class="text-xl font-bold">
+                    Administração
+                </h2>
+
+                <p class="
+                    text-xs
+                    text-slate-500
+                    mt-1
+                ">
+                    Cadastro e registros
+                </p>
+
+            </div>
+
+            <button
+                id="btn-close-admin"
+                class="
+                    text-2xl
+                    text-slate-500
+                    hover:text-white
+                "
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- CADASTRO -->
+
+        <div class="
+            border
+            border-slate-800
+            rounded-2xl
+            p-4
+        ">
+
+            <h3 class="
+                font-semibold
+                mb-4
+            ">
+                Cadastrar funcionário
+            </h3>
+
+
+            <input
+                id="funcionario-nome"
+                type="text"
+                placeholder="Nome completo"
+                class="
+                    w-full
+                    bg-slate-950
+                    border
+                    border-slate-700
+                    rounded-xl
+                    px-4
+                    py-3
+                    mb-3
+                    outline-none
+                "
+            >
+
+
+            <input
+                id="funcionario-id"
+                type="text"
+                placeholder="Matrícula / ID"
+                class="
+                    w-full
+                    bg-slate-950
+                    border
+                    border-slate-700
+                    rounded-xl
+                    px-4
+                    py-3
+                    mb-3
+                    outline-none
+                "
+            >
+
+
+            <p class="
+                text-xs
+                text-slate-500
+                mb-4
+            ">
+                O sistema fará 5 capturas do rosto
+                para melhorar o reconhecimento.
+            </p>
+
+
+            <button
+                id="btn-register"
+                class="
+                    w-full
+                    py-3
+                    rounded-xl
+                    bg-emerald-400
+                    text-slate-950
+                    font-bold
+                    disabled:bg-slate-800
+                    disabled:text-slate-500
+                "
+            >
+                CADASTRAR ROSTO
+            </button>
+
+
+            <div
+                id="register-status"
+                class="
+                    hidden
+                    mt-4
+                    p-3
+                    rounded-xl
+                    text-sm
+                "
+            ></div>
+
+        </div>
+
+
+        <!-- FUNCIONÁRIOS -->
+
+        <div class="mt-6">
+
+            <div class="
+                flex
+                justify-between
+                items-center
+                mb-3
+            ">
+
+                <h3 class="font-semibold">
+                    Funcionários
+                </h3>
+
+                <span
+                    id="employee-count"
+                    class="text-xs text-slate-500"
+                >
+                    0
+                </span>
+
+            </div>
+
+
+            <div
+                id="employee-list"
+                class="space-y-2"
+            ></div>
+
+        </div>
+
+
+        <!-- REGISTROS -->
+
+        <div class="mt-6">
+
+            <div class="
+                flex
+                justify-between
+                items-center
+                mb-3
+            ">
+
+                <h3 class="font-semibold">
+                    Registros
+                </h3>
+
+            </div>
+
+
+            <div
+                id="history-list"
+                class="
+                    space-y-2
+                    max-h-64
+                    overflow-auto
+                "
+            ></div>
+
+        </div>
+
+
+        <!-- PDF -->
+
+        <div class="
+            mt-5
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            gap-2
+        ">
+
+            <button
+                id="btn-pdf"
+                class="
+                    py-3
+                    rounded-xl
+                    bg-emerald-400
+                    text-slate-950
+                    font-bold
+                "
+            >
+                📄 BAIXAR PDF
+            </button>
+
+
+            <button
+                id="btn-share-pdf"
+                class="
+                    py-3
+                    rounded-xl
+                    border
+                    border-emerald-400/40
+                    text-emerald-400
+                    font-bold
+                "
+            >
+                📤 ENVIAR PDF
+            </button>
+
+        </div>
+
+
+        <!-- CSV -->
+
+        <button
+            id="btn-export"
+            class="
+                w-full
+                mt-2
+                py-3
+                rounded-xl
+                border
+                border-slate-700
+                text-slate-400
+            "
+        >
+            📊 EXPORTAR CSV
+        </button>
+
+
+        <!-- LIMPAR -->
+
+        <button
+            id="btn-clear"
+            class="
+                w-full
+                mt-6
+                py-3
+                rounded-xl
+                border
+                border-rose-500/30
+                text-rose-400
+                hover:bg-rose-500/10
+            "
+        >
+            APAGAR TODOS OS DADOS
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* ============================================================
+   CONFIGURAÇÃO
+============================================================ */
+
+/*
+ * SENHA DA ADMINISTRAÇÃO
+ *
+ * TROQUE AQUI.
+ *
+ * Exemplo:
+ *
+ * const ADMIN_PASSWORD = "123456";
+ */
+
+const ADMIN_PASSWORD = "123456";
+
+
+/*
+ * Limite de reconhecimento.
+ *
+ * Menor = mais rigoroso.
+ * Maior = mais permissivo.
+ */
+
+const FACE_THRESHOLD = 0.58;
+
+
+const MODEL_URL =
+    "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
+
+
+const EMPLOYEE_STORAGE =
+    "PONTO_FACIAL_FUNCIONARIOS_V5";
+
+
+const RECORD_STORAGE =
+    "PONTO_FACIAL_REGISTROS_V5";
+
+
+/* ============================================================
+   ELEMENTOS
+============================================================ */
+
+const video =
+    document.getElementById("video");
+
+const btnCapture =
+    document.getElementById("btn-capture");
+
+const btnAdmin =
+    document.getElementById("btn-admin");
+
+const passwordModal =
+    document.getElementById("password-modal");
+
+const adminPassword =
+    document.getElementById("admin-password");
+
+const passwordError =
+    document.getElementById("password-error");
+
+const btnPasswordEnter =
+    document.getElementById("btn-password-enter");
+
+const btnPasswordCancel =
+    document.getElementById("btn-password-cancel");
+
+const adminModal =
+    document.getElementById("admin-modal");
+
+const btnCloseAdmin =
+    document.getElementById("btn-close-admin");
+
+const btnRegister =
+    document.getElementById("btn-register");
+
+const btnPdf =
+    document.getElementById("btn-pdf");
+
+const btnSharePdf =
+    document.getElementById("btn-share-pdf");
+
+const btnExport =
+    document.getElementById("btn-export");
+
+const btnClear =
+    document.getElementById("btn-clear");
+
+const cameraStatus =
+    document.getElementById("camera-status");
+
+const cameraError =
+    document.getElementById("camera-error");
+
+const cameraErrorText =
+    document.getElementById("camera-error-text");
+
+const btnCameraRetry =
+    document.getElementById("btn-camera-retry");
+
+const scanner =
+    document.getElementById("scanner");
+
+const faceIndicator =
+    document.getElementById("face-indicator");
+
+const statusBox =
+    document.getElementById("status-box");
+
+const statusText =
+    document.getElementById("status-text");
+
+const systemLog =
+    document.getElementById("system-log");
+
+const registerStatus =
+    document.getElementById("register-status");
+
+const employeeList =
+    document.getElementById("employee-list");
+
+const historyList =
+    document.getElementById("history-list");
+
+const employeeCount =
+    document.getElementById("employee-count");
+
+const inputName =
+    document.getElementById("funcionario-nome");
+
+const inputId =
+    document.getElementById("funcionario-id");
+
+
+/* ============================================================
+   VARIÁVEIS
+============================================================ */
+
+let cameraStream = null;
+
+let modelsLoaded = false;
+
+let cameraReady = false;
+
+let processing = false;
+
+
+/* ============================================================
+   RELÓGIO
+============================================================ */
+
+function updateClock() {
+
+    document.getElementById("clock").textContent =
+        new Date().toLocaleTimeString("pt-BR");
+
+}
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* ============================================================
+   LOG
+============================================================ */
+
+function log(message) {
+
+    const time =
+        new Date().toLocaleTimeString("pt-BR");
+
+    const line =
+        document.createElement("div");
+
+    line.textContent =
+        `[${time}] ${message}`;
+
+    systemLog.appendChild(line);
+
+    systemLog.scrollTop =
+        systemLog.scrollHeight;
+
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+function showStatus(
+    message,
+    type = "loading"
+) {
+
+    statusBox.className =
+        "mt-4 p-4 rounded-xl text-center text-sm";
+
+    if (type === "success") {
+
+        statusBox.classList.add(
+            "bg-emerald-500/10",
+            "text-emerald-400",
+            "border",
+            "border-emerald-500/20"
+        );
+
+    }
+    else if (type === "error") {
+
+        statusBox.classList.add(
+            "bg-rose-500/10",
+            "text-rose-400",
+            "border",
+            "border-rose-500/20"
+        );
+
+    }
+    else {
+
+        statusBox.classList.add(
+            "bg-slate-800",
+            "text-slate-300"
+        );
+
+    }
+
+    statusText.textContent =
+        message;
+
+    statusBox.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* ============================================================
+   STORAGE
+============================================================ */
+
+function getEmployees() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                EMPLOYEE_STORAGE
+            ) || "[]"
+        );
+
+    }
+    catch {
+
+        return [];
+
+    }
+
+}
+
+
+function saveEmployees(
+    employees
+) {
+
+    localStorage.setItem(
+        EMPLOYEE_STORAGE,
+        JSON.stringify(
+            employees
+        )
+    );
+
+}
+
+
+function getRecords() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                RECORD_STORAGE
+            ) || "[]"
+        );
+
+    }
+    catch {
+
+        return [];
+
+    }
+
+}
+
+
+function saveRecords(
+    records
+) {
+
+    localStorage.setItem(
+        RECORD_STORAGE,
+        JSON.stringify(
+            records
+        )
+    );
+
+}
+
+
+/* ============================================================
+   CÂMERA
+============================================================ */
+
+async function startCamera() {
+
+    try {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
 
         }
 
+        cameraStatus.textContent =
+            "CÂMERA: CONECTANDO";
 
-        /* ========================================================
-           INICIALIZAÇÃO
-        ======================================================== */
-
-        async function initialize() {
-
-            log(
-                "Iniciando sistema..."
-            );
+        cameraStatus.className =
+            "text-yellow-400";
 
 
-            /*
-             * Inicia câmera e modelos
-             * simultaneamente.
-             */
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
 
-            await Promise.all([
-                startCamera(),
-                loadFaceModels()
-            ]);
+                video: {
 
+                    facingMode: {
+                        ideal: "user"
+                    },
 
-            renderAdmin();
+                    width: {
+                        ideal: 1280
+                    },
 
+                    height: {
+                        ideal: 720
+                    },
 
-            /*
-             * Começa monitoramento.
-             */
-
-            requestAnimationFrame(
-                monitorFace
-            );
-
-
-            /*
-             * Se o navegador bloquear
-             * autoplay, tenta novamente.
-             */
-
-            video.addEventListener(
-                "loadedmetadata",
-                () => {
-
-                    if (
-                        cameraReady
-                    ) {
-
-                        video.play()
-                            .catch(
-                                () => {}
-                            );
-
+                    frameRate: {
+                        ideal: 30
                     }
 
-                }
+                },
+
+                audio: false
+
+            });
+
+
+        video.srcObject =
+            cameraStream;
+
+        await video.play();
+
+
+        cameraReady =
+            true;
+
+
+        cameraStatus.textContent =
+            "CÂMERA: ATIVA";
+
+        cameraStatus.className =
+            "text-emerald-400";
+
+
+        cameraError.classList.add(
+            "hidden"
+        );
+
+        cameraError.classList.remove(
+            "flex"
+        );
+
+
+        log(
+            "Câmera iniciada."
+        );
+
+
+        updateButton();
+
+    }
+    catch (error) {
+
+        cameraReady =
+            false;
+
+        cameraStatus.textContent =
+            "CÂMERA: ERRO";
+
+        cameraStatus.className =
+            "text-rose-400";
+
+
+        cameraErrorText.textContent =
+            "Permita o acesso à câmera no navegador.";
+
+
+        cameraError.classList.remove(
+            "hidden"
+        );
+
+        cameraError.classList.add(
+            "flex"
+        );
+
+
+        log(
+            "Erro ao acessar câmera."
+        );
+
+    }
+
+}
+
+
+btnCameraRetry.addEventListener(
+    "click",
+    startCamera
+);
+
+
+/* ============================================================
+   MODELOS
+============================================================ */
+
+async function loadFaceModels() {
+
+    try {
+
+        showStatus(
+            "Carregando reconhecimento facial...",
+            "loading"
+        );
+
+
+        await faceapi.nets
+            .tinyFaceDetector
+            .loadFromUri(
+                MODEL_URL
+            );
+
+
+        await faceapi.nets
+            .faceLandmark68TinyNet
+            .loadFromUri(
+                MODEL_URL
+            );
+
+
+        await faceapi.nets
+            .faceRecognitionNet
+            .loadFromUri(
+                MODEL_URL
+            );
+
+
+        modelsLoaded =
+            true;
+
+
+        showStatus(
+            "Reconhecimento facial pronto.",
+            "success"
+        );
+
+
+        log(
+            "Modelos carregados."
+        );
+
+
+        updateButton();
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        showStatus(
+            "Erro ao carregar reconhecimento facial.",
+            "error"
+        );
+
+        log(
+            "Erro nos modelos."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   BOTÃO
+============================================================ */
+
+function updateButton() {
+
+    if (
+        modelsLoaded &&
+        cameraReady &&
+        !processing
+    ) {
+
+        btnCapture.disabled =
+            false;
+
+        btnCapture.textContent =
+            "REGISTRAR PONTO";
+
+    }
+
+}
+
+
+/* ============================================================
+   DETECTAR ROSTO
+============================================================ */
+
+async function detectFace() {
+
+    if (
+        !modelsLoaded ||
+        !cameraReady ||
+        video.videoWidth === 0
+    ) {
+
+        return null;
+
+    }
+
+
+    return await faceapi
+        .detectSingleFace(
+            video,
+            new faceapi.TinyFaceDetectorOptions({
+
+                inputSize: 416,
+
+                scoreThreshold: 0.40
+
+            })
+        )
+        .withFaceLandmarks(true)
+        .withFaceDescriptor();
+
+}
+
+
+async function captureFace(
+    attempts = 8
+) {
+
+    for (
+        let i = 0;
+        i < attempts;
+        i++
+    ) {
+
+        const detection =
+            await detectFace();
+
+
+        if (detection) {
+
+            return detection;
+
+        }
+
+
+        await sleep(
+            350
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+function sleep(ms) {
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
+
+}
+
+
+/* ============================================================
+   DISTÂNCIA
+============================================================ */
+
+function euclideanDistance(
+    a,
+    b
+) {
+
+    let sum = 0;
+
+
+    for (
+        let i = 0;
+        i < a.length;
+        i++
+    ) {
+
+        const d =
+            a[i] - b[i];
+
+        sum +=
+            d * d;
+
+    }
+
+
+    return Math.sqrt(sum);
+
+}
+
+
+/* ============================================================
+   ENCONTRAR FUNCIONÁRIO
+============================================================ */
+
+function findBestEmployee(
+    descriptor
+) {
+
+    const employees =
+        getEmployees();
+
+
+    let best =
+        null;
+
+
+    for (
+        const employee
+        of employees
+    ) {
+
+        if (
+            !employee.descriptors
+        ) {
+
+            continue;
+
+        }
+
+
+        const distances =
+            employee.descriptors
+                .map(
+                    saved =>
+                        euclideanDistance(
+                            descriptor,
+                            saved
+                        )
+                )
+                .sort(
+                    (a, b) =>
+                        a - b
+                );
+
+
+        const bestDistances =
+            distances.slice(
+                0,
+                2
+            );
+
+
+        const average =
+            bestDistances.reduce(
+                (sum, value) =>
+                    sum + value,
+                0
+            ) /
+            bestDistances.length;
+
+
+        if (
+            !best ||
+            average < best.distance
+        ) {
+
+            best = {
+
+                employee,
+
+                distance:
+                    average
+
+            };
+
+        }
+
+    }
+
+
+    if (
+        best &&
+        best.distance <=
+        FACE_THRESHOLD
+    ) {
+
+        return best;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* ============================================================
+   BIPE
+============================================================ */
+
+/*
+ * O navegador bloqueia áudio automático.
+ *
+ * Por isso o AudioContext é criado depois
+ * que o usuário interage com o sistema.
+ */
+
+let audioContext = null;
+
+
+function beep(
+    frequency = 900,
+    duration = 160
+) {
+
+    try {
+
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
+
+            audioContext.resume();
+
+        }
+
+
+        const oscillator =
+            audioContext.createOscillator();
+
+        const gain =
+            audioContext.createGain();
+
+
+        oscillator.type =
+            "sine";
+
+        oscillator.frequency.value =
+            frequency;
+
+
+        gain.gain.setValueAtTime(
+            0.0001,
+            audioContext.currentTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.25,
+            audioContext.currentTime + 0.01
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            audioContext.currentTime +
+            duration / 1000
+        );
+
+
+        oscillator.connect(
+            gain
+        );
+
+        gain.connect(
+            audioContext.destination
+        );
+
+
+        oscillator.start();
+
+        oscillator.stop(
+            audioContext.currentTime +
+            duration / 1000
+        );
+
+    }
+    catch (error) {
+
+        console.log(
+            "Áudio não disponível."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   PONTO
+============================================================ */
+
+btnCapture.addEventListener(
+    "click",
+    registerPoint
+);
+
+
+async function registerPoint() {
+
+    if (processing) {
+        return;
+    }
+
+
+    const employees =
+        getEmployees();
+
+
+    if (
+        employees.length === 0
+    ) {
+
+        beep(
+            250,
+            250
+        );
+
+        showStatus(
+            "Nenhum funcionário cadastrado. Abra a Administração.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    processing =
+        true;
+
+
+    btnCapture.disabled =
+        true;
+
+    btnCapture.textContent =
+        "RECONHECENDO...";
+
+
+    scanner.classList.remove(
+        "hidden"
+    );
+
+
+    faceIndicator.textContent =
+        "ANALISANDO ROSTO";
+
+
+    showStatus(
+        "Olhe diretamente para a câmera...",
+        "loading"
+    );
+
+
+    try {
+
+        await sleep(
+            400
+        );
+
+
+        const detection =
+            await captureFace(
+                10
+            );
+
+
+        if (!detection) {
+
+            beep(
+                250,
+                250
+            );
+
+
+            faceIndicator.textContent =
+                "ROSTO NÃO DETECTADO";
+
+
+            showStatus(
+                "Não consegui detectar seu rosto. Melhore a iluminação e fique de frente para a câmera.",
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        const descriptor =
+            Array.from(
+                detection.descriptor
+            );
+
+
+        faceIndicator.textContent =
+            "COMPARANDO";
+
+
+        showStatus(
+            "Comparando rosto...",
+            "loading"
+        );
+
+
+        const match =
+            findBestEmployee(
+                descriptor
+            );
+
+
+        if (!match) {
+
+            beep(
+                250,
+                250
+            );
+
+
+            faceIndicator.textContent =
+                "NÃO RECONHECIDO";
+
+
+            showStatus(
+                "Rosto não reconhecido. Faça o cadastro facial na Administração.",
+                "error"
             );
 
 
             log(
-                "Sistema inicializado."
+                "Rosto não reconhecido."
+            );
+
+
+            return;
+
+        }
+
+
+        const employee =
+            match.employee;
+
+
+        const now =
+            new Date();
+
+
+        const record = {
+
+            id:
+                generateId(),
+
+            funcionario_id:
+                employee.id,
+
+            funcionario_nome:
+                employee.name,
+
+            tipo:
+                document.getElementById(
+                    "tipo-ponto"
+                ).value,
+
+            data:
+                now.toLocaleDateString(
+                    "pt-BR"
+                ),
+
+            hora:
+                now.toLocaleTimeString(
+                    "pt-BR"
+                ),
+
+            distance:
+                Number(
+                    match.distance.toFixed(4)
+                )
+
+        };
+
+
+        const records =
+            getRecords();
+
+
+        records.push(
+            record
+        );
+
+
+        saveRecords(
+            records
+        );
+
+
+        /*
+         * Bipe de sucesso.
+         */
+
+        beep(
+            1000,
+            180
+        );
+
+
+        await sleep(
+            100
+        );
+
+
+        beep(
+            1400,
+            180
+        );
+
+
+        faceIndicator.textContent =
+            "REGISTRADO ✓";
+
+
+        showStatus(
+            `Ponto registrado para ${employee.name} às ${record.hora}.`,
+            "success"
+        );
+
+
+        log(
+            `Ponto registrado: ${employee.name} | ${record.tipo}`
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        beep(
+            250,
+            250
+        );
+
+
+        showStatus(
+            "Erro durante o reconhecimento facial.",
+            "error"
+        );
+
+    }
+    finally {
+
+        await sleep(
+            1200
+        );
+
+
+        processing =
+            false;
+
+
+        scanner.classList.add(
+            "hidden"
+        );
+
+
+        faceIndicator.textContent =
+            "PROCURANDO ROSTO";
+
+
+        updateButton();
+
+    }
+
+}
+
+
+/* ============================================================
+   ID
+============================================================ */
+
+function generateId() {
+
+    if (
+        crypto &&
+        crypto.randomUUID
+    ) {
+
+        return crypto.randomUUID();
+
+    }
+
+
+    return (
+        Date.now() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2)
+    );
+
+}
+
+
+/* ============================================================
+   SENHA ADM
+============================================================ */
+
+btnAdmin.addEventListener(
+    "click",
+    openPassword
+);
+
+
+function openPassword() {
+
+    passwordModal.classList.remove(
+        "hidden"
+    );
+
+    passwordModal.classList.add(
+        "flex"
+    );
+
+
+    adminPassword.value =
+        "";
+
+    passwordError.classList.add(
+        "hidden"
+    );
+
+
+    setTimeout(
+        () =>
+            adminPassword.focus(),
+        100
+    );
+
+}
+
+
+btnPasswordCancel.addEventListener(
+    "click",
+    closePassword
+);
+
+
+function closePassword() {
+
+    passwordModal.classList.add(
+        "hidden"
+    );
+
+    passwordModal.classList.remove(
+        "flex"
+    );
+
+}
+
+
+btnPasswordEnter.addEventListener(
+    "click",
+    checkPassword
+);
+
+
+adminPassword.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+            checkPassword();
+
+        }
+
+    }
+);
+
+
+function checkPassword() {
+
+    if (
+        adminPassword.value ===
+        ADMIN_PASSWORD
+    ) {
+
+        passwordError.classList.add(
+            "hidden"
+        );
+
+
+        closePassword();
+
+
+        adminModal.classList.remove(
+            "hidden"
+        );
+
+        adminModal.classList.add(
+            "flex"
+        );
+
+
+        renderAdmin();
+
+
+        /*
+         * Bipe de acesso autorizado.
+         */
+
+        beep(
+            1000,
+            120
+        );
+
+    }
+    else {
+
+        passwordError.classList.remove(
+            "hidden"
+        );
+
+
+        beep(
+            250,
+            200
+        );
+
+
+        adminPassword.select();
+
+    }
+
+}
+
+
+/* ============================================================
+   FECHAR ADMIN
+============================================================ */
+
+btnCloseAdmin.addEventListener(
+    "click",
+    closeAdmin
+);
+
+
+function closeAdmin() {
+
+    adminModal.classList.add(
+        "hidden"
+    );
+
+    adminModal.classList.remove(
+        "flex"
+    );
+
+}
+
+
+adminModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            adminModal
+        ) {
+
+            closeAdmin();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   CADASTRO
+============================================================ */
+
+btnRegister.addEventListener(
+    "click",
+    registerEmployee
+);
+
+
+async function registerEmployee() {
+
+    const name =
+        inputName.value.trim();
+
+    const id =
+        inputId.value.trim();
+
+
+    if (
+        !name ||
+        !id
+    ) {
+
+        showRegisterStatus(
+            "Informe o nome e a matrícula.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const employees =
+        getEmployees();
+
+
+    if (
+        employees.some(
+            employee =>
+                employee.id.toLowerCase() ===
+                id.toLowerCase()
+        )
+    ) {
+
+        showRegisterStatus(
+            "Essa matrícula já está cadastrada.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    btnRegister.disabled =
+        true;
+
+
+    const descriptors = [];
+
+
+    try {
+
+        for (
+            let i = 1;
+            i <= 5;
+            i++
+        ) {
+
+            const instructions = [
+
+                "Olhe diretamente para a câmera.",
+
+                "Vire levemente o rosto para a esquerda.",
+
+                "Vire levemente o rosto para a direita.",
+
+                "Volte a olhar para frente.",
+
+                "Mantenha o rosto parado."
+
+            ];
+
+
+            showRegisterStatus(
+                `Captura ${i} de 5: ${instructions[i - 1]}`
+            );
+
+
+            await sleep(
+                1000
+            );
+
+
+            const detection =
+                await captureFace(
+                    10
+                );
+
+
+            if (!detection) {
+
+                throw new Error(
+                    `Não foi possível capturar a imagem ${i}.`
+                );
+
+            }
+
+
+            descriptors.push(
+                Array.from(
+                    detection.descriptor
+                )
             );
 
         }
 
 
-        /* ========================================================
-           ENCERRAR CÂMERA
-        ======================================================== */
+        employees.push({
 
-        window.addEventListener(
-            "beforeunload",
-            () => {
+            id,
 
-                if (
-                    cameraStream
-                ) {
+            name,
 
-                    cameraStream
-                        .getTracks()
-                        .forEach(
-                            track =>
-                                track.stop()
-                        );
+            descriptors,
 
-                }
+            createdAt:
+                new Date().toISOString()
+
+        });
+
+
+        saveEmployees(
+            employees
+        );
+
+
+        inputName.value =
+            "";
+
+        inputId.value =
+            "";
+
+
+        beep(
+            1000,
+            150
+        );
+
+
+        await sleep(
+            100
+        );
+
+
+        beep(
+            1400,
+            150
+        );
+
+
+        showRegisterStatus(
+            `${name} cadastrado com sucesso!`,
+            "success"
+        );
+
+
+        log(
+            `Funcionário cadastrado: ${name}`
+        );
+
+
+        renderAdmin();
+
+    }
+    catch (error) {
+
+        showRegisterStatus(
+            error.message,
+            "error"
+        );
+
+    }
+    finally {
+
+        btnRegister.disabled =
+            false;
+
+    }
+
+}
+
+
+/* ============================================================
+   STATUS CADASTRO
+============================================================ */
+
+function showRegisterStatus(
+    message,
+    type = "loading"
+) {
+
+    registerStatus.className =
+        "mt-4 p-3 rounded-xl text-sm";
+
+
+    if (
+        type === "success"
+    ) {
+
+        registerStatus.classList.add(
+            "bg-emerald-500/10",
+            "text-emerald-400"
+        );
+
+    }
+    else if (
+        type === "error"
+    ) {
+
+        registerStatus.classList.add(
+            "bg-rose-500/10",
+            "text-rose-400"
+        );
+
+    }
+    else {
+
+        registerStatus.classList.add(
+            "bg-slate-800",
+            "text-slate-300"
+        );
+
+    }
+
+
+    registerStatus.textContent =
+        message;
+
+
+    registerStatus.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* ============================================================
+   ADMIN
+============================================================ */
+
+function renderAdmin() {
+
+    const employees =
+        getEmployees();
+
+    const records =
+        getRecords();
+
+
+    employeeCount.textContent =
+        employees.length;
+
+
+    employeeList.innerHTML =
+        "";
+
+
+    if (
+        employees.length === 0
+    ) {
+
+        employeeList.innerHTML = `
+            <div class="
+                p-4
+                rounded-xl
+                bg-slate-950
+                text-sm
+                text-slate-500
+            ">
+                Nenhum funcionário cadastrado.
+            </div>
+        `;
+
+    }
+    else {
+
+        employees.forEach(
+            employee => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className = `
+                    bg-slate-950
+                    border
+                    border-slate-800
+                    rounded-xl
+                    p-4
+                    flex
+                    justify-between
+                    items-center
+                `;
+
+
+                div.innerHTML = `
+
+                    <div>
+
+                        <div class="font-semibold">
+                            ${escapeHtml(
+                                employee.name
+                            )}
+                        </div>
+
+                        <div class="
+                            text-xs
+                            text-slate-500
+                            mt-1
+                        ">
+                            Matrícula:
+                            ${escapeHtml(
+                                employee.id
+                            )}
+                        </div>
+
+                    </div>
+
+                    <button
+                        class="
+                            delete-employee
+                            text-xs
+                            text-rose-400
+                        "
+                        data-id="${escapeHtml(
+                            employee.id
+                        )}"
+                    >
+                        EXCLUIR
+                    </button>
+
+                `;
+
+
+                employeeList.appendChild(
+                    div
+                );
 
             }
         );
 
 
-        /* ========================================================
-           INICIAR
-        ======================================================== */
+        document
+            .querySelectorAll(
+                ".delete-employee"
+            )
+            .forEach(
+                button => {
 
-        window.addEventListener(
-            "load",
-            initialize
+                    button.addEventListener(
+                        "click",
+                        () =>
+                            deleteEmployee(
+                                button.dataset.id
+                            )
+                    );
+
+                }
+            );
+
+    }
+
+
+    /* HISTÓRICO */
+
+    historyList.innerHTML =
+        "";
+
+
+    const reversed =
+        records
+            .slice()
+            .reverse();
+
+
+    if (
+        reversed.length === 0
+    ) {
+
+        historyList.innerHTML = `
+            <div class="
+                p-4
+                rounded-xl
+                bg-slate-950
+                text-sm
+                text-slate-500
+            ">
+                Nenhum registro.
+            </div>
+        `;
+
+    }
+    else {
+
+        reversed.forEach(
+            record => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className = `
+                    bg-slate-950
+                    border
+                    border-slate-800
+                    rounded-xl
+                    p-3
+                    flex
+                    justify-between
+                `;
+
+
+                div.innerHTML = `
+
+                    <div>
+
+                        <div class="
+                            font-semibold
+                            text-sm
+                        ">
+                            ${escapeHtml(
+                                record.funcionario_nome
+                            )}
+                        </div>
+
+                        <div class="
+                            text-[10px]
+                            text-slate-500
+                        ">
+                            ${escapeHtml(
+                                record.funcionario_id
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div class="
+                        text-right
+                        text-xs
+                    ">
+
+                        <div class="
+                            text-emerald-400
+                            font-mono
+                        ">
+                            ${escapeHtml(
+                                record.hora
+                            )}
+                        </div>
+
+                        <div class="
+                            text-slate-400
+                        ">
+                            ${escapeHtml(
+                                record.tipo
+                            )}
+                        </div>
+
+                        <div class="
+                            text-slate-600
+                        ">
+                            ${escapeHtml(
+                                record.data
+                            )}
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                historyList.appendChild(
+                    div
+                );
+
+            }
         );
 
-    </script>
+    }
+
+}
+
+
+/* ============================================================
+   EXCLUIR
+============================================================ */
+
+function deleteEmployee(
+    employeeId
+) {
+
+    const employees =
+        getEmployees();
+
+
+    const employee =
+        employees.find(
+            item =>
+                item.id ===
+                employeeId
+        );
+
+
+    if (!employee) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            `Excluir ${employee.name}?`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    saveEmployees(
+        employees.filter(
+            item =>
+                item.id !==
+                employeeId
+        )
+    );
+
+
+    renderAdmin();
+
+
+    log(
+        `Funcionário excluído: ${employee.name}`
+    );
+
+}
+
+
+/* ============================================================
+   PDF
+============================================================ */
+
+function createPDF() {
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const records =
+        getRecords();
+
+
+    if (
+        records.length === 0
+    ) {
+
+        alert(
+            "Não existem registros para gerar o PDF."
+        );
+
+        return null;
+
+    }
+
+
+    const doc =
+        new jsPDF();
+
+
+    const now =
+        new Date();
+
+
+    /* CABEÇALHO */
+
+    doc.setFontSize(
+        20
+    );
+
+
+    doc.text(
+        "PONTO FACIAL",
+        20,
+        20
+    );
+
+
+    doc.setFontSize(
+        11
+    );
+
+
+    doc.text(
+        "Relatório de Registro de Presença",
+        20,
+        28
+    );
+
+
+    doc.setFontSize(
+        9
+    );
+
+
+    doc.text(
+        `Gerado em: ${now.toLocaleString("pt-BR")}`,
+        20,
+        36
+    );
+
+
+    doc.line(
+        20,
+        41,
+        190,
+        41
+    );
+
+
+    /* RESUMO */
+
+    doc.setFontSize(
+        11
+    );
+
+
+    doc.text(
+        `Total de registros: ${records.length}`,
+        20,
+        52
+    );
+
+
+    doc.text(
+        `Funcionários: ${getEmployees().length}`,
+        20,
+        59
+    );
+
+
+    /* CABEÇALHO TABELA */
+
+    let y =
+        72;
+
+
+    doc.setFontSize(
+        8
+    );
+
+
+    doc.text(
+        "DATA",
+        20,
+        y
+    );
+
+
+    doc.text(
+        "HORA",
+        45,
+        y
+    );
+
+
+    doc.text(
+        "MATRÍCULA",
+        65,
+        y
+    );
+
+
+    doc.text(
+        "FUNCIONÁRIO",
+        95,
+        y
+    );
+
+
+    doc.text(
+        "TIPO",
+        155,
+        y
+    );
+
+
+    y += 6;
+
+
+    doc.line(
+        20,
+        y,
+        190,
+        y
+    );
+
+
+    y += 7;
+
+
+    /* REGISTROS */
+
+    records.forEach(
+        (record, index) => {
+
+            if (
+                y > 280
+            ) {
+
+                doc.addPage();
+
+                y = 20;
+
+            }
+
+
+            doc.text(
+                String(record.data),
+                20,
+                y
+            );
+
+
+            doc.text(
+                String(record.hora),
+                45,
+                y
+            );
+
+
+            doc.text(
+                String(record.funcionario_id)
+                    .substring(
+                        0,
+                        14
+                    ),
+                65,
+                y
+            );
+
+
+            doc.text(
+                String(record.funcionario_nome)
+                    .substring(
+                        0,
+                        28
+                    ),
+                95,
+                y
+            );
+
+
+            doc.text(
+                String(record.tipo)
+                    .substring(
+                        0,
+                        18
+                    ),
+                155,
+                y
+            );
+
+
+            y += 7;
+
+        }
+    );
+
+
+    /* RODAPÉ */
+
+    const pages =
+        doc.getNumberOfPages();
+
+
+    for (
+        let i = 1;
+        i <= pages;
+        i++
+    ) {
+
+        doc.setPage(
+            i
+        );
+
+
+        doc.setFontSize(
+            8
+        );
+
+
+        doc.text(
+            `Página ${i} de ${pages}`,
+            170,
+            290
+        );
+
+    }
+
+
+    return doc;
+
+}
+
+
+/* ============================================================
+   BAIXAR PDF
+============================================================ */
+
+btnPdf.addEventListener(
+    "click",
+    () => {
+
+        const doc =
+            createPDF();
+
+
+        if (!doc) {
+            return;
+        }
+
+
+        const filename =
+            `ponto-facial-${new Date()
+                .toISOString()
+                .slice(0, 10)}.pdf`;
+
+
+        doc.save(
+            filename
+        );
+
+
+        beep(
+            1000,
+            120
+        );
+
+    }
+);
+
+
+/* ============================================================
+   ENVIAR / COMPARTILHAR PDF
+============================================================ */
+
+btnSharePdf.addEventListener(
+    "click",
+    async () => {
+
+        const doc =
+            createPDF();
+
+
+        if (!doc) {
+            return;
+        }
+
+
+        const blob =
+            doc.output(
+                "blob"
+            );
+
+
+        const filename =
+            `ponto-facial-${new Date()
+                .toISOString()
+                .slice(0, 10)}.pdf`;
+
+
+        const file =
+            new File(
+                [blob],
+                filename,
+                {
+                    type:
+                        "application/pdf"
+                }
+            );
+
+
+        /*
+         * Celular moderno:
+         * abre WhatsApp, e-mail,
+         * Drive etc. pelo menu
+         * nativo de compartilhamento.
+         */
+
+        if (
+            navigator.share &&
+            navigator.canShare &&
+            navigator.canShare({
+                files: [file]
+            })
+        ) {
+
+            try {
+
+                await navigator.share({
+
+                    title:
+                        "Relatório Ponto Facial",
+
+                    text:
+                        "Relatório de registros de ponto.",
+
+                    files: [
+                        file
+                    ]
+
+                });
+
+
+                beep(
+                    1000,
+                    120
+                );
+
+
+                return;
+
+            }
+            catch (error) {
+
+                /*
+                 * Usuário cancelou.
+                 */
+
+                return;
+
+            }
+
+        }
+
+
+        /*
+         * Se o navegador não suporta
+         * compartilhamento de arquivos,
+         * faz download.
+         */
+
+        doc.save(
+            filename
+        );
+
+
+        alert(
+            "Seu navegador não permite compartilhar arquivos diretamente. O PDF foi baixado."
+        );
+
+    }
+);
+
+
+/* ============================================================
+   CSV
+============================================================ */
+
+btnExport.addEventListener(
+    "click",
+    () => {
+
+        const records =
+            getRecords();
+
+
+        if (
+            records.length === 0
+        ) {
+
+            alert(
+                "Não existem registros."
+            );
+
+            return;
+
+        }
+
+
+        const header = [
+            "ID",
+            "Funcionario ID",
+            "Funcionario",
+            "Tipo",
+            "Data",
+            "Hora",
+            "Distancia"
+        ];
+
+
+        const rows =
+            records.map(
+                record => [
+
+                    record.id,
+
+                    record.funcionario_id,
+
+                    record.funcionario_nome,
+
+                    record.tipo,
+
+                    record.data,
+
+                    record.hora,
+
+                    record.distance
+
+                ]
+            );
+
+
+        const csv =
+            [
+                header,
+                ...rows
+            ]
+            .map(
+                row =>
+                    row
+                        .map(
+                            value =>
+                                `"${String(value)
+                                    .replaceAll(
+                                        '"',
+                                        '""'
+                                    )}"`
+                        )
+                        .join(";")
+            )
+            .join("\n");
+
+
+        const blob =
+            new Blob(
+                [
+                    "\uFEFF" +
+                    csv
+                ],
+                {
+                    type:
+                        "text/csv;charset=utf-8"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            url;
+
+
+        link.download =
+            "pontos-faciais.csv";
+
+
+        link.click();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+);
+
+
+/* ============================================================
+   APAGAR TUDO
+============================================================ */
+
+btnClear.addEventListener(
+    "click",
+    () => {
+
+        if (
+            !confirm(
+                "ATENÇÃO!\n\nIsso apagará todos os funcionários e registros deste navegador.\n\nDeseja continuar?"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        localStorage.removeItem(
+            EMPLOYEE_STORAGE
+        );
+
+
+        localStorage.removeItem(
+            RECORD_STORAGE
+        );
+
+
+        renderAdmin();
+
+
+        showStatus(
+            "Todos os dados foram apagados.",
+            "success"
+        );
+
+    }
+);
+
+
+/* ============================================================
+   SEGURANÇA HTML
+============================================================ */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ============================================================
+   MONITORAR ROSTO
+============================================================ */
+
+let lastCheck =
+    0;
+
+
+async function monitorFace() {
+
+    if (
+        !modelsLoaded ||
+        !cameraReady ||
+        processing
+    ) {
+
+        requestAnimationFrame(
+            monitorFace
+        );
+
+        return;
+
+    }
+
+
+    const now =
+        Date.now();
+
+
+    if (
+        now - lastCheck <
+        600
+    ) {
+
+        requestAnimationFrame(
+            monitorFace
+        );
+
+        return;
+
+    }
+
+
+    lastCheck =
+        now;
+
+
+    try {
+
+        const detection =
+            await detectFace();
+
+
+        if (detection) {
+
+            faceIndicator.textContent =
+                "ROSTO DETECTADO ✓";
+
+            faceIndicator.className = `
+                absolute
+                bottom-3
+                left-1/2
+                -translate-x-1/2
+                bg-emerald-500/80
+                px-3
+                py-1
+                rounded-full
+                text-[10px]
+                font-mono
+                text-black
+                whitespace-nowrap
+            `;
+
+        }
+        else {
+
+            faceIndicator.textContent =
+                "PROCURANDO ROSTO";
+
+            faceIndicator.className = `
+                absolute
+                bottom-3
+                left-1/2
+                -translate-x-1/2
+                bg-black/70
+                px-3
+                py-1
+                rounded-full
+                text-[10px]
+                font-mono
+                text-slate-300
+                whitespace-nowrap
+            `;
+
+        }
+
+    }
+    catch {
+
+    }
+
+
+    requestAnimationFrame(
+        monitorFace
+    );
+
+}
+
+
+/* ============================================================
+   INICIALIZAÇÃO
+============================================================ */
+
+async function initialize() {
+
+    log(
+        "Iniciando sistema..."
+    );
+
+
+    await Promise.all([
+        startCamera(),
+        loadFaceModels()
+    ]);
+
+
+    requestAnimationFrame(
+        monitorFace
+    );
+
+
+    log(
+        "Sistema pronto."
+    );
+
+}
+
+
+window.addEventListener(
+    "load",
+    initialize
+);
+
+
+/* ============================================================
+   ENCERRAR CÂMERA
+============================================================ */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(
+                    track =>
+                        track.stop()
+                );
+
+        }
+
+    }
+);
+
+</script>
 
 </body>
 </html>
