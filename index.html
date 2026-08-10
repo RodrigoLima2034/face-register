@@ -18,24 +18,15 @@
     <title>Ponto Facial</title>
 
 
-    <!-- =====================================================
-         TAILWIND
-    ====================================================== -->
-
+    <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
 
 
-    <!-- =====================================================
-         FACE API
-    ====================================================== -->
-
+    <!-- FACE API -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 
-    <!-- =====================================================
-         PDF
-    ====================================================== -->
-
+    <!-- PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 
@@ -53,7 +44,6 @@
         }
 
         body {
-
             font-family:
                 Inter,
                 system-ui,
@@ -61,128 +51,88 @@
                 BlinkMacSystemFont,
                 "Segoe UI",
                 sans-serif;
-
         }
 
         video {
-
-            transform:
-                scaleX(-1);
-
+            transform: scaleX(-1);
         }
 
         .scanner-line {
-
             animation:
-                scanner 2s
-                ease-in-out
-                infinite;
-
+                scanner 2s ease-in-out infinite;
         }
 
         @keyframes scanner {
 
             0% {
-
                 top: 8%;
                 opacity: 0;
-
             }
 
             20% {
-
                 opacity: 1;
-
             }
 
             50% {
-
                 top: 92%;
                 opacity: 1;
-
             }
 
             80% {
-
                 opacity: 1;
-
             }
 
             100% {
-
                 top: 8%;
                 opacity: 0;
-
             }
 
         }
 
         .pulse-success {
-
             animation:
-                successPulse 0.8s
-                ease-in-out
-                2;
-
+                successPulse 0.8s ease-in-out 2;
         }
 
         @keyframes successPulse {
 
             0% {
-
-                transform:
-                    scale(1);
-
+                transform: scale(1);
             }
 
             50% {
-
-                transform:
-                    scale(1.03);
-
+                transform: scale(1.03);
             }
 
             100% {
-
-                transform:
-                    scale(1);
-
+                transform: scale(1);
             }
 
         }
 
         .success-glow {
-
             animation:
-                successGlow 1.2s
-                ease-out;
-
+                successGlow 1.2s ease-out;
         }
 
         @keyframes successGlow {
 
             0% {
-
                 box-shadow:
                     0 0 0
                     rgba(52,211,153,0);
-
             }
 
             40% {
-
                 box-shadow:
                     0 0 45px
                     rgba(52,211,153,.45);
-
             }
 
             100% {
-
                 box-shadow:
                     0 0 0
                     rgba(52,211,153,0);
-
             }
 
         }
@@ -1006,9 +956,7 @@
 
 
 
-        <!-- =================================================
-             CADASTRO
-        ================================================== -->
+        <!-- CADASTRO -->
 
         <div
             class="
@@ -1109,9 +1057,7 @@
 
 
 
-        <!-- =================================================
-             FUNCIONÁRIOS
-        ================================================== -->
+        <!-- FUNCIONÁRIOS -->
 
         <div
             class="mt-6"
@@ -1155,9 +1101,7 @@
 
 
 
-        <!-- =================================================
-             HISTÓRICO
-        ================================================== -->
+        <!-- HISTÓRICO -->
 
         <div
             class="mt-6"
@@ -1194,9 +1138,7 @@
 
 
 
-        <!-- =================================================
-             PDF
-        ================================================== -->
+        <!-- PDF -->
 
         <div
             class="
@@ -1291,13 +1233,10 @@
 
 
 /*
- * ===========================================================
- * SENHA DO ADMIN
- * ===========================================================
- *
- * ALTERE AQUI.
- *
- */
+   SENHA DA ADMINISTRAÇÃO
+
+   ALTERE PARA A SUA SENHA.
+*/
 
 const ADMIN_PASSWORD =
     "123456";
@@ -1305,10 +1244,11 @@ const ADMIN_PASSWORD =
 
 
 /*
- * ===========================================================
- * LIMITE DE RECONHECIMENTO
- * ===========================================================
- */
+   SENSIBILIDADE DO RECONHECIMENTO
+
+   Menor = mais rigoroso
+   Maior = mais fácil reconhecer
+*/
 
 const FACE_THRESHOLD =
     0.58;
@@ -1316,10 +1256,8 @@ const FACE_THRESHOLD =
 
 
 /*
- * ===========================================================
- * MODELOS
- * ===========================================================
- */
+   MODELOS FACE API
+*/
 
 const MODEL_URL =
     "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
@@ -1327,17 +1265,15 @@ const MODEL_URL =
 
 
 /*
- * ===========================================================
- * STORAGE
- * ===========================================================
- */
+   STORAGE
+*/
 
 const EMPLOYEE_STORAGE =
-    "PONTO_FACIAL_FUNCIONARIOS_V7";
+    "PONTO_FACIAL_FUNCIONARIOS_V8";
 
 
 const RECORD_STORAGE =
-    "PONTO_FACIAL_REGISTROS_V7";
+    "PONTO_FACIAL_REGISTROS_V8";
 
 
 
@@ -1544,6 +1480,10 @@ let cameraReady =
 
 let processing =
     false;
+
+
+let audioContext =
+    null;
 
 
 
@@ -1897,7 +1837,7 @@ btnCameraRetry.addEventListener(
 
 
 /* ============================================================
-   MODELOS
+   MODELOS FACIAIS
 ============================================================ */
 
 async function loadFaceModels() {
@@ -1965,7 +1905,7 @@ async function loadFaceModels() {
 
 
         log(
-            "Erro nos modelos."
+            "Erro nos modelos faciais."
         );
 
     }
@@ -2000,7 +1940,7 @@ function updateButton() {
 
 
 /* ============================================================
-   DETECÇÃO
+   DETECTAR ROSTO
 ============================================================ */
 
 async function detectFace() {
@@ -2039,7 +1979,7 @@ async function detectFace() {
 
 
 /* ============================================================
-   CAPTURA
+   CAPTURA COM TENTATIVAS
 ============================================================ */
 
 async function captureFace(
@@ -2099,7 +2039,7 @@ function sleep(
 
 
 /* ============================================================
-   DISTÂNCIA
+   DISTÂNCIA FACIAL
 ============================================================ */
 
 function euclideanDistance(
@@ -2239,19 +2179,8 @@ function findBestEmployee(
 
 
 /* ============================================================
-   SISTEMA DE ÁUDIO PROFISSIONAL
+   ÁUDIO
 ============================================================ */
-
-let audioContext =
-    null;
-
-
-
-/*
- * ------------------------------------------------------------
- * CONTEXTO DE ÁUDIO
- * ------------------------------------------------------------
- */
 
 function getAudioContext() {
 
@@ -2284,11 +2213,9 @@ function getAudioContext() {
 
 
 
-/*
- * ------------------------------------------------------------
- * NOTA MUSICAL
- * ------------------------------------------------------------
- */
+/* ============================================================
+   TOCAR TOM
+============================================================ */
 
 function playTone(
     frequency,
@@ -2320,10 +2247,6 @@ function playTone(
     );
 
 
-    /*
-     * Entrada suave
-     */
-
     gain.gain.setValueAtTime(
         0.001,
         startTime
@@ -2336,10 +2259,6 @@ function playTone(
     );
 
 
-    /*
-     * Sustentação
-     */
-
     gain.gain.setValueAtTime(
         volume,
         startTime +
@@ -2347,10 +2266,6 @@ function playTone(
         0.10
     );
 
-
-    /*
-     * Saída suave
-     */
 
     gain.gain.exponentialRampToValueAtTime(
         0.001,
@@ -2383,15 +2298,9 @@ function playTone(
 
 
 
-/*
- * ------------------------------------------------------------
- * SOM DE REGISTRO
- *
- * TIN → TIIIN → TIIIIIN
- *
- * Som de terminal biométrico.
- * ------------------------------------------------------------
- */
+/* ============================================================
+   🔊 SOM DE REGISTRO APROVADO
+============================================================ */
 
 function successSound() {
 
@@ -2403,10 +2312,6 @@ function successSound() {
         ctx.currentTime;
 
 
-    /*
-     * Mi
-     */
-
     playTone(
         659.25,
         0.25,
@@ -2415,10 +2320,6 @@ function successSound() {
         "sine"
     );
 
-
-    /*
-     * Sol
-     */
 
     playTone(
         783.99,
@@ -2429,10 +2330,6 @@ function successSound() {
     );
 
 
-    /*
-     * Dó
-     */
-
     playTone(
         1046.50,
         0.60,
@@ -2441,10 +2338,6 @@ function successSound() {
         "sine"
     );
 
-
-    /*
-     * Pequeno brilho sonoro
-     */
 
     playTone(
         1318.51,
@@ -2458,13 +2351,9 @@ function successSound() {
 
 
 
-/*
- * ------------------------------------------------------------
- * SOM DE ADMIN
- *
- * DÓ → MI → SOL
- * ------------------------------------------------------------
- */
+/* ============================================================
+   🔊 SOM DO ADMIN
+============================================================ */
 
 function adminSound() {
 
@@ -2503,13 +2392,18 @@ function adminSound() {
 
 
 
+/* ============================================================
+   🔊 SOM DE NÃO DETECTADO
+============================================================ */
+
 /*
- * ------------------------------------------------------------
- * SOM DE ERRO
- *
- * SOM GRAVE
- * ------------------------------------------------------------
- */
+    ESTE É O SOM QUE VOCÊ PEDIU.
+
+    MAIS ALTO
+    MAIS GRAVE
+    MAIS LONGO
+    3 AVISOS
+*/
 
 function errorSound() {
 
@@ -2521,32 +2415,64 @@ function errorSound() {
         ctx.currentTime;
 
 
+    /*
+       PRIMEIRO BEEP
+    */
+
     playTone(
-        220,
-        0.30,
+        180,
+        0.45,
         start,
-        0.22,
-        "sine"
+        0.50,
+        "sawtooth"
     );
 
 
+    /*
+       SEGUNDO BEEP
+    */
+
     playTone(
-        185,
-        0.48,
-        start + 0.23,
-        0.24,
-        "sine"
+        140,
+        0.65,
+        start + 0.40,
+        0.55,
+        "sawtooth"
+    );
+
+
+    /*
+       TERCEIRO BEEP
+    */
+
+    playTone(
+        110,
+        0.85,
+        start + 0.95,
+        0.60,
+        "sawtooth"
+    );
+
+
+    /*
+       QUARTO TOM DE ALERTA
+    */
+
+    playTone(
+        90,
+        0.95,
+        start + 1.65,
+        0.55,
+        "triangle"
     );
 
 }
 
 
 
-/*
- * ------------------------------------------------------------
- * SOM DE PROCESSAMENTO
- * ------------------------------------------------------------
- */
+/* ============================================================
+   SOM DE PROCESSAMENTO
+============================================================ */
 
 function processingSound() {
 
@@ -2650,10 +2576,6 @@ async function registerPoint() {
     );
 
 
-    /*
-     * SOM DE PROCESSAMENTO
-     */
-
     processingSound();
 
 
@@ -2674,6 +2596,10 @@ async function registerPoint() {
             !detection
         ) {
 
+            /*
+             * SOM ALTO
+             */
+
             errorSound();
 
 
@@ -2682,8 +2608,13 @@ async function registerPoint() {
 
 
             showStatus(
-                "Não consegui detectar seu rosto. Melhore a iluminação e fique de frente para a câmera.",
+                "ROSTO NÃO DETECTADO. Fique de frente para a câmera e melhore a iluminação.",
                 "error"
+            );
+
+
+            log(
+                "Rosto não detectado."
             );
 
 
@@ -2722,17 +2653,17 @@ async function registerPoint() {
 
 
             faceIndicator.textContent =
-                "NÃO RECONHECIDO";
+                "ROSTO NÃO RECONHECIDO";
 
 
             showStatus(
-                "Rosto não reconhecido. Faça o cadastro facial na Administração.",
+                "ROSTO NÃO RECONHECIDO. Procure a Administração para cadastrar seu rosto.",
                 "error"
             );
 
 
             log(
-                "Rosto não reconhecido."
+                "Rosto detectado, mas não reconhecido."
             );
 
 
@@ -2801,9 +2732,7 @@ async function registerPoint() {
 
 
         /*
-         * ====================================================
-         * SOM BONITO DE CONFIRMAÇÃO
-         * ====================================================
+         * SOM BONITO
          */
 
         successSound();
@@ -2818,10 +2747,6 @@ async function registerPoint() {
             "success"
         );
 
-
-        /*
-         * EFEITO VISUAL
-         */
 
         document
             .getElementById(
@@ -2932,7 +2857,7 @@ function generateId() {
 
 
 /* ============================================================
-   SENHA ADMIN
+   ADMIN
 ============================================================ */
 
 btnAdmin.addEventListener(
@@ -2973,10 +2898,6 @@ function openPassword() {
 
 
 
-/* ============================================================
-   FECHAR SENHA
-============================================================ */
-
 btnPasswordCancel.addEventListener(
     "click",
     closePassword
@@ -3000,7 +2921,7 @@ function closePassword() {
 
 
 /* ============================================================
-   LOGIN ADMIN
+   LOGIN
 ============================================================ */
 
 btnPasswordEnter.addEventListener(
@@ -3059,7 +2980,6 @@ function checkPassword() {
         adminSound();
 
     }
-
 
     else {
 
@@ -3285,10 +3205,6 @@ async function registerEmployee() {
             "";
 
 
-        /*
-         * SOM DE CADASTRO
-         */
-
         successSound();
 
 
@@ -3390,7 +3306,7 @@ function showRegisterStatus(
 
 
 /* ============================================================
-   RENDER ADMIN
+   ADMIN
 ============================================================ */
 
 function renderAdmin() {
@@ -3431,7 +3347,6 @@ function renderAdmin() {
 
     }
 
-
     else {
 
         employees.forEach(
@@ -3460,9 +3375,7 @@ function renderAdmin() {
                     <div>
 
                         <div
-                            class="
-                                font-semibold
-                            "
+                            class="font-semibold"
                         >
                             ${escapeHtml(
                                 employee.name
@@ -3560,7 +3473,6 @@ function renderAdmin() {
         `;
 
     }
-
 
     else {
 
@@ -3736,7 +3648,7 @@ function deleteEmployee(
 
 
 /* ============================================================
-   PDF
+   GERAR PDF
 ============================================================ */
 
 function createPDF() {
@@ -4049,7 +3961,7 @@ btnPdf.addEventListener(
 
 
 /* ============================================================
-   COMPARTILHAR PDF
+   ENVIAR PDF
 ============================================================ */
 
 btnSharePdf.addEventListener(
@@ -4131,7 +4043,6 @@ btnSharePdf.addEventListener(
 
             }
 
-
             catch {
 
                 return;
@@ -4184,17 +4095,11 @@ btnExport.addEventListener(
         const header = [
 
             "ID",
-
             "Funcionario ID",
-
             "Funcionario",
-
             "Tipo",
-
             "Data",
-
             "Hora",
-
             "Distancia"
 
         ];
@@ -4296,7 +4201,7 @@ btnExport.addEventListener(
 
 
 /* ============================================================
-   APAGAR DADOS
+   APAGAR
 ============================================================ */
 
 btnClear.addEventListener(
@@ -4341,7 +4246,7 @@ btnClear.addEventListener(
 
 
 /* ============================================================
-   ESCAPAR HTML
+   SEGURANÇA HTML
 ============================================================ */
 
 function escapeHtml(
@@ -4377,7 +4282,7 @@ function escapeHtml(
 
 
 /* ============================================================
-   MONITORAMENTO DO ROSTO
+   MONITORAMENTO
 ============================================================ */
 
 let lastCheck =
@@ -4456,7 +4361,6 @@ async function monitorFace() {
             `;
 
         }
-
 
         else {
 
