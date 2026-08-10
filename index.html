@@ -17,14 +17,11 @@
 
     <title>Ponto Facial</title>
 
-
     <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-
     <!-- FACE API -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-
 
     <!-- PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1232,48 +1229,32 @@
 ============================================================ */
 
 
-/*
-   SENHA DA ADMINISTRAÇÃO
-
-   ALTERE AQUI.
-*/
+/* SENHA DA ADMINISTRAÇÃO */
 
 const ADMIN_PASSWORD =
     "123456";
 
 
-
-/*
-   SENSIBILIDADE DO RECONHECIMENTO
-
-   Menor = mais rigoroso
-   Maior = mais fácil reconhecer
-*/
+/* SENSIBILIDADE DO RECONHECIMENTO */
 
 const FACE_THRESHOLD =
     0.58;
 
 
-
-/*
-   MODELOS FACIAIS
-*/
+/* MODELOS */
 
 const MODEL_URL =
     "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
 
 
-
-/*
-   STORAGE
-*/
+/* STORAGE */
 
 const EMPLOYEE_STORAGE =
-    "PONTO_FACIAL_FUNCIONARIOS_V9";
+    "PONTO_FACIAL_FUNCIONARIOS_V10";
 
 
 const RECORD_STORAGE =
-    "PONTO_FACIAL_REGISTROS_V9";
+    "PONTO_FACIAL_REGISTROS_V10";
 
 
 
@@ -1286,174 +1267,145 @@ const video =
         "video"
     );
 
-
 const btnCapture =
     document.getElementById(
         "btn-capture"
     );
-
 
 const btnAdmin =
     document.getElementById(
         "btn-admin"
     );
 
-
 const passwordModal =
     document.getElementById(
         "password-modal"
     );
-
 
 const adminPassword =
     document.getElementById(
         "admin-password"
     );
 
-
 const passwordError =
     document.getElementById(
         "password-error"
     );
-
 
 const btnPasswordEnter =
     document.getElementById(
         "btn-password-enter"
     );
 
-
 const btnPasswordCancel =
     document.getElementById(
         "btn-password-cancel"
     );
-
 
 const adminModal =
     document.getElementById(
         "admin-modal"
     );
 
-
 const btnCloseAdmin =
     document.getElementById(
         "btn-close-admin"
     );
-
 
 const btnRegister =
     document.getElementById(
         "btn-register"
     );
 
-
 const btnPdf =
     document.getElementById(
         "btn-pdf"
     );
-
 
 const btnSharePdf =
     document.getElementById(
         "btn-share-pdf"
     );
 
-
 const btnExport =
     document.getElementById(
         "btn-export"
     );
-
 
 const btnClear =
     document.getElementById(
         "btn-clear"
     );
 
-
 const cameraStatus =
     document.getElementById(
         "camera-status"
     );
-
 
 const cameraError =
     document.getElementById(
         "camera-error"
     );
 
-
 const cameraErrorText =
     document.getElementById(
         "camera-error-text"
     );
-
 
 const btnCameraRetry =
     document.getElementById(
         "btn-camera-retry"
     );
 
-
 const scanner =
     document.getElementById(
         "scanner"
     );
-
 
 const faceIndicator =
     document.getElementById(
         "face-indicator"
     );
 
-
 const statusBox =
     document.getElementById(
         "status-box"
     );
-
 
 const statusText =
     document.getElementById(
         "status-text"
     );
 
-
 const systemLog =
     document.getElementById(
         "system-log"
     );
-
 
 const registerStatus =
     document.getElementById(
         "register-status"
     );
 
-
 const employeeList =
     document.getElementById(
         "employee-list"
     );
-
 
 const historyList =
     document.getElementById(
         "history-list"
     );
 
-
 const employeeCount =
     document.getElementById(
         "employee-count"
     );
 
-
 const inputName =
     document.getElementById(
         "funcionario-nome"
     );
-
 
 const inputId =
     document.getElementById(
@@ -1469,18 +1421,14 @@ const inputId =
 let cameraStream =
     null;
 
-
 let modelsLoaded =
     false;
-
 
 let cameraReady =
     false;
 
-
 let processing =
     false;
-
 
 let audioContext =
     null;
@@ -1502,9 +1450,7 @@ function updateClock() {
 
 }
 
-
 updateClock();
-
 
 setInterval(
     updateClock,
@@ -1526,21 +1472,17 @@ function log(
             "pt-BR"
         );
 
-
     const line =
         document.createElement(
             "div"
         );
 
-
     line.textContent =
         `[${time}] ${message}`;
-
 
     systemLog.appendChild(
         line
     );
-
 
     systemLog.scrollTop =
         systemLog.scrollHeight;
@@ -1560,7 +1502,6 @@ function showStatus(
 
     statusBox.className =
         "mt-4 p-4 rounded-xl text-center text-sm";
-
 
     if (
         type === "success"
@@ -1597,10 +1538,8 @@ function showStatus(
 
     }
 
-
     statusText.textContent =
         message;
-
 
     statusBox.classList.remove(
         "hidden"
@@ -1635,7 +1574,6 @@ function getEmployees() {
 }
 
 
-
 function saveEmployees(
     employees
 ) {
@@ -1648,7 +1586,6 @@ function saveEmployees(
     );
 
 }
-
 
 
 function getRecords() {
@@ -1670,7 +1607,6 @@ function getRecords() {
     }
 
 }
-
 
 
 function saveRecords(
@@ -1709,14 +1645,11 @@ async function startCamera() {
 
         }
 
-
         cameraStatus.textContent =
             "CÂMERA: CONECTANDO";
 
-
         cameraStatus.className =
             "text-yellow-400";
-
 
         cameraStream =
             await navigator.mediaDevices
@@ -1746,45 +1679,35 @@ async function startCamera() {
 
                 });
 
-
         video.srcObject =
             cameraStream;
 
-
         await video.play();
-
 
         cameraReady =
             true;
 
-
         cameraStatus.textContent =
             "CÂMERA: ATIVA";
 
-
         cameraStatus.className =
             "text-emerald-400";
-
 
         cameraError.classList.add(
             "hidden"
         );
 
-
         cameraError.classList.remove(
             "flex"
         );
-
 
         log(
             "Câmera iniciada."
         );
 
-
         updateButton();
 
     }
-
 
     catch (error) {
 
@@ -1792,32 +1715,25 @@ async function startCamera() {
             error
         );
 
-
         cameraReady =
             false;
-
 
         cameraStatus.textContent =
             "CÂMERA: ERRO";
 
-
         cameraStatus.className =
             "text-rose-400";
 
-
         cameraErrorText.textContent =
             "Permita o acesso à câmera no navegador.";
-
 
         cameraError.classList.remove(
             "hidden"
         );
 
-
         cameraError.classList.add(
             "flex"
         );
-
 
         log(
             "Erro ao acessar câmera."
@@ -1826,7 +1742,6 @@ async function startCamera() {
     }
 
 }
-
 
 
 btnCameraRetry.addEventListener(
@@ -1849,13 +1764,11 @@ async function loadFaceModels() {
             "loading"
         );
 
-
         await faceapi.nets
             .tinyFaceDetector
             .loadFromUri(
                 MODEL_URL
             );
-
 
         await faceapi.nets
             .faceLandmark68TinyNet
@@ -1863,33 +1776,27 @@ async function loadFaceModels() {
                 MODEL_URL
             );
 
-
         await faceapi.nets
             .faceRecognitionNet
             .loadFromUri(
                 MODEL_URL
             );
 
-
         modelsLoaded =
             true;
-
 
         showStatus(
             "Reconhecimento facial pronto.",
             "success"
         );
 
-
         log(
             "Modelos carregados."
         );
 
-
         updateButton();
 
     }
-
 
     catch (error) {
 
@@ -1897,12 +1804,10 @@ async function loadFaceModels() {
             error
         );
 
-
         showStatus(
             "Erro ao carregar reconhecimento facial.",
             "error"
         );
-
 
         log(
             "Erro nos modelos faciais."
@@ -1929,7 +1834,6 @@ function updateButton() {
         btnCapture.disabled =
             false;
 
-
         btnCapture.textContent =
             "REGISTRAR PONTO";
 
@@ -1955,7 +1859,6 @@ async function detectFace() {
 
     }
 
-
     return await faceapi
         .detectSingleFace(
             video,
@@ -1979,7 +1882,7 @@ async function detectFace() {
 
 
 /* ============================================================
-   CAPTURA COM TENTATIVAS
+   CAPTURA
 ============================================================ */
 
 async function captureFace(
@@ -1995,7 +1898,6 @@ async function captureFace(
         const detection =
             await detectFace();
 
-
         if (
             detection
         ) {
@@ -2004,13 +1906,11 @@ async function captureFace(
 
         }
 
-
         await sleep(
-            300
+            250
         );
 
     }
-
 
     return null;
 
@@ -2039,7 +1939,7 @@ function sleep(
 
 
 /* ============================================================
-   DISTÂNCIA FACIAL
+   DISTÂNCIA
 ============================================================ */
 
 function euclideanDistance(
@@ -2049,7 +1949,6 @@ function euclideanDistance(
 
     let sum =
         0;
-
 
     for (
         let i = 0;
@@ -2061,13 +1960,11 @@ function euclideanDistance(
             a[i] -
             b[i];
 
-
         sum +=
             difference *
             difference;
 
     }
-
 
     return Math.sqrt(
         sum
@@ -2078,7 +1975,7 @@ function euclideanDistance(
 
 
 /* ============================================================
-   ENCONTRAR FUNCIONÁRIO
+   RECONHECIMENTO
 ============================================================ */
 
 function findBestEmployee(
@@ -2088,10 +1985,8 @@ function findBestEmployee(
     const employees =
         getEmployees();
 
-
     let best =
         null;
-
 
     for (
         const employee
@@ -2105,7 +2000,6 @@ function findBestEmployee(
             continue;
 
         }
-
 
         const distances =
             employee.descriptors
@@ -2121,13 +2015,11 @@ function findBestEmployee(
                         a - b
                 );
 
-
         const bestDistances =
             distances.slice(
                 0,
                 2
             );
-
 
         const average =
             bestDistances.reduce(
@@ -2139,7 +2031,6 @@ function findBestEmployee(
                 0
             ) /
             bestDistances.length;
-
 
         if (
             !best ||
@@ -2160,7 +2051,6 @@ function findBestEmployee(
 
     }
 
-
     if (
         best &&
         best.distance <=
@@ -2170,7 +2060,6 @@ function findBestEmployee(
         return best;
 
     }
-
 
     return null;
 
@@ -2196,7 +2085,6 @@ function getAudioContext() {
 
     }
 
-
     if (
         audioContext.state ===
         "suspended"
@@ -2206,7 +2094,6 @@ function getAudioContext() {
 
     }
 
-
     return audioContext;
 
 }
@@ -2214,7 +2101,7 @@ function getAudioContext() {
 
 
 /* ============================================================
-   TOCAR TOM
+   GERADOR DE TOM
 ============================================================ */
 
 function playTone(
@@ -2228,44 +2115,36 @@ function playTone(
     const ctx =
         getAudioContext();
 
-
     const oscillator =
         ctx.createOscillator();
-
 
     const gain =
         ctx.createGain();
 
-
     oscillator.type =
         type;
-
 
     oscillator.frequency.setValueAtTime(
         frequency,
         startTime
     );
 
-
     gain.gain.setValueAtTime(
         0.001,
         startTime
     );
 
-
     gain.gain.exponentialRampToValueAtTime(
         volume,
-        startTime + 0.015
+        startTime + 0.008
     );
-
 
     gain.gain.setValueAtTime(
         volume,
         startTime +
         duration -
-        0.04
+        0.025
     );
-
 
     gain.gain.exponentialRampToValueAtTime(
         0.001,
@@ -2273,21 +2152,17 @@ function playTone(
         duration
     );
 
-
     oscillator.connect(
         gain
     );
-
 
     gain.connect(
         ctx.destination
     );
 
-
     oscillator.start(
         startTime
     );
-
 
     oscillator.stop(
         startTime +
@@ -2299,7 +2174,7 @@ function playTone(
 
 
 /* ============================================================
-   🔊 SOM DE REGISTRO APROVADO
+   SOM DE SUCESSO
 ============================================================ */
 
 function successSound() {
@@ -2307,33 +2182,29 @@ function successSound() {
     const ctx =
         getAudioContext();
 
-
     const start =
         ctx.currentTime;
 
-
     playTone(
         659.25,
-        0.18,
+        0.15,
         start,
         0.22,
         "sine"
     );
 
-
     playTone(
         783.99,
-        0.22,
-        start + 0.10,
+        0.18,
+        start + 0.09,
         0.25,
         "sine"
     );
 
-
     playTone(
         1046.50,
-        0.38,
-        start + 0.22,
+        0.28,
+        start + 0.18,
         0.28,
         "sine"
     );
@@ -2343,7 +2214,7 @@ function successSound() {
 
 
 /* ============================================================
-   🔊 SOM ADMIN
+   SOM ADMIN
 ============================================================ */
 
 function adminSound() {
@@ -2351,31 +2222,27 @@ function adminSound() {
     const ctx =
         getAudioContext();
 
-
     const start =
         ctx.currentTime;
 
-
     playTone(
         523.25,
-        0.14,
+        0.10,
         start,
         0.16
     );
 
-
     playTone(
         659.25,
-        0.18,
-        start + 0.10,
+        0.13,
+        start + 0.08,
         0.18
     );
 
-
     playTone(
         783.99,
-        0.28,
-        start + 0.20,
+        0.20,
+        start + 0.16,
         0.20
     );
 
@@ -2384,19 +2251,16 @@ function adminSound() {
 
 
 /* ============================================================
-   🔊🔊🔊 SOM DE NÃO DETECTADO
+   🔊 SOM DE NÃO DETECTADO
 ============================================================ */
 
 /*
-   MESMA ALTURA DO ANTERIOR,
-   MAS AGORA MUITO MAIS CURTO.
+   MUITO CURTO.
 
-   SOM:
+   BEEP
+   BEEP
 
-   BEEP-BEEP-BEEP
-
-   Duração aproximada:
-   0.75 segundo
+   Aproximadamente 0,35 segundo.
 */
 
 function errorSound() {
@@ -2404,45 +2268,27 @@ function errorSound() {
     const ctx =
         getAudioContext();
 
-
     const start =
         ctx.currentTime;
 
 
-    /*
-       PRIMEIRO BEEP
-    */
+    /* BEEP 1 */
 
     playTone(
         180,
-        0.22,
+        0.14,
         start,
-        0.50,
-        "sawtooth"
-    );
-
-
-    /*
-       SEGUNDO BEEP
-    */
-
-    playTone(
-        140,
-        0.25,
-        start + 0.24,
         0.55,
         "sawtooth"
     );
 
 
-    /*
-       TERCEIRO BEEP
-    */
+    /* BEEP 2 */
 
     playTone(
-        110,
-        0.30,
-        start + 0.52,
+        130,
+        0.16,
+        start + 0.17,
         0.60,
         "sawtooth"
     );
@@ -2460,24 +2306,21 @@ function processingSound() {
     const ctx =
         getAudioContext();
 
-
     const start =
         ctx.currentTime;
 
-
     playTone(
         440,
-        0.08,
+        0.06,
         start,
         0.08,
         "triangle"
     );
 
-
     playTone(
         554.37,
-        0.08,
-        start + 0.10,
+        0.06,
+        start + 0.08,
         0.08,
         "triangle"
     );
@@ -2496,7 +2339,6 @@ btnCapture.addEventListener(
 );
 
 
-
 async function registerPoint() {
 
     if (
@@ -2507,10 +2349,8 @@ async function registerPoint() {
 
     }
 
-
     const employees =
         getEmployees();
-
 
     if (
         employees.length === 0
@@ -2518,60 +2358,48 @@ async function registerPoint() {
 
         errorSound();
 
-
         showStatus(
             "Nenhum funcionário cadastrado. Abra a Administração.",
             "error"
         );
 
-
         return;
 
     }
 
-
     processing =
         true;
-
 
     btnCapture.disabled =
         true;
 
-
     btnCapture.textContent =
         "RECONHECENDO...";
-
 
     scanner.classList.remove(
         "hidden"
     );
 
-
     faceIndicator.textContent =
         "ANALISANDO ROSTO";
-
 
     showStatus(
         "Olhe diretamente para a câmera...",
         "loading"
     );
 
-
     processingSound();
-
 
     try {
 
         await sleep(
-            300
+            250
         );
-
 
         const detection =
             await captureFace(
                 10
             );
-
 
         if (
             !detection
@@ -2579,48 +2407,39 @@ async function registerPoint() {
 
             errorSound();
 
-
             faceIndicator.textContent =
                 "ROSTO NÃO DETECTADO";
-
 
             showStatus(
                 "ROSTO NÃO DETECTADO. Fique de frente para a câmera e melhore a iluminação.",
                 "error"
             );
 
-
             log(
                 "Rosto não detectado."
             );
 
-
             return;
 
         }
-
 
         const descriptor =
             Array.from(
                 detection.descriptor
             );
 
-
         faceIndicator.textContent =
             "COMPARANDO";
-
 
         showStatus(
             "Comparando rosto...",
             "loading"
         );
 
-
         const match =
             findBestEmployee(
                 descriptor
             );
-
 
         if (
             !match
@@ -2628,34 +2447,27 @@ async function registerPoint() {
 
             errorSound();
 
-
             faceIndicator.textContent =
                 "ROSTO NÃO RECONHECIDO";
-
 
             showStatus(
                 "ROSTO NÃO RECONHECIDO. Procure a Administração para cadastrar seu rosto.",
                 "error"
             );
 
-
             log(
                 "Rosto detectado, mas não reconhecido."
             );
-
 
             return;
 
         }
 
-
         const employee =
             match.employee;
 
-
         const now =
             new Date();
-
 
         const record = {
 
@@ -2693,33 +2505,26 @@ async function registerPoint() {
 
         };
 
-
         const records =
             getRecords();
-
 
         records.push(
             record
         );
 
-
         saveRecords(
             records
         );
 
-
         successSound();
-
 
         faceIndicator.textContent =
             "REGISTRADO ✓";
-
 
         showStatus(
             `Ponto registrado para ${employee.name} às ${record.hora}.`,
             "success"
         );
-
 
         document
             .getElementById(
@@ -2729,7 +2534,6 @@ async function registerPoint() {
                 "pulse-success",
                 "success-glow"
             );
-
 
         setTimeout(
             () => {
@@ -2747,13 +2551,11 @@ async function registerPoint() {
             1800
         );
 
-
         log(
             `Ponto registrado: ${employee.name} | ${record.tipo}`
         );
 
     }
-
 
     catch (error) {
 
@@ -2761,9 +2563,7 @@ async function registerPoint() {
             error
         );
 
-
         errorSound();
-
 
         showStatus(
             "Erro durante o reconhecimento facial.",
@@ -2772,26 +2572,21 @@ async function registerPoint() {
 
     }
 
-
     finally {
 
         await sleep(
-            1000
+            700
         );
-
 
         processing =
             false;
-
 
         scanner.classList.add(
             "hidden"
         );
 
-
         faceIndicator.textContent =
             "PROCURANDO ROSTO";
-
 
         updateButton();
 
@@ -2816,7 +2611,6 @@ function generateId() {
 
     }
 
-
     return (
         Date.now() +
         "-" +
@@ -2839,27 +2633,22 @@ btnAdmin.addEventListener(
 );
 
 
-
 function openPassword() {
 
     passwordModal.classList.remove(
         "hidden"
     );
 
-
     passwordModal.classList.add(
         "flex"
     );
 
-
     adminPassword.value =
         "";
-
 
     passwordError.classList.add(
         "hidden"
     );
-
 
     setTimeout(
         () =>
@@ -2870,12 +2659,10 @@ function openPassword() {
 }
 
 
-
 btnPasswordCancel.addEventListener(
     "click",
     closePassword
 );
-
 
 
 function closePassword() {
@@ -2883,7 +2670,6 @@ function closePassword() {
     passwordModal.classList.add(
         "hidden"
     );
-
 
     passwordModal.classList.remove(
         "flex"
@@ -2903,7 +2689,6 @@ btnPasswordEnter.addEventListener(
 );
 
 
-
 adminPassword.addEventListener(
     "keydown",
     event => {
@@ -2921,7 +2706,6 @@ adminPassword.addEventListener(
 );
 
 
-
 function checkPassword() {
 
     if (
@@ -2933,22 +2717,17 @@ function checkPassword() {
             "hidden"
         );
 
-
         closePassword();
-
 
         adminModal.classList.remove(
             "hidden"
         );
 
-
         adminModal.classList.add(
             "flex"
         );
 
-
         renderAdmin();
-
 
         adminSound();
 
@@ -2960,9 +2739,7 @@ function checkPassword() {
             "hidden"
         );
 
-
         errorSound();
-
 
         adminPassword.select();
 
@@ -2982,20 +2759,17 @@ btnCloseAdmin.addEventListener(
 );
 
 
-
 function closeAdmin() {
 
     adminModal.classList.add(
         "hidden"
     );
 
-
     adminModal.classList.remove(
         "flex"
     );
 
 }
-
 
 
 adminModal.addEventListener(
@@ -3026,16 +2800,13 @@ btnRegister.addEventListener(
 );
 
 
-
 async function registerEmployee() {
 
     const name =
         inputName.value.trim();
 
-
     const id =
         inputId.value.trim();
-
 
     if (
         !name ||
@@ -3047,18 +2818,14 @@ async function registerEmployee() {
             "error"
         );
 
-
         errorSound();
-
 
         return;
 
     }
 
-
     const employees =
         getEmployees();
-
 
     if (
         employees.some(
@@ -3074,22 +2841,17 @@ async function registerEmployee() {
             "error"
         );
 
-
         errorSound();
-
 
         return;
 
     }
 
-
     btnRegister.disabled =
         true;
 
-
     const descriptors =
         [];
-
 
     try {
 
@@ -3113,22 +2875,18 @@ async function registerEmployee() {
 
             ];
 
-
             showRegisterStatus(
                 `Captura ${i} de 5: ${instructions[i - 1]}`
             );
 
-
             await sleep(
-                900
+                800
             );
-
 
             const detection =
                 await captureFace(
                     10
                 );
-
 
             if (
                 !detection
@@ -3140,7 +2898,6 @@ async function registerEmployee() {
 
             }
 
-
             descriptors.push(
                 Array.from(
                     detection.descriptor
@@ -3148,7 +2905,6 @@ async function registerEmployee() {
             );
 
         }
-
 
         employees.push({
 
@@ -3164,43 +2920,34 @@ async function registerEmployee() {
 
         });
 
-
         saveEmployees(
             employees
         );
 
-
         inputName.value =
             "";
-
 
         inputId.value =
             "";
 
-
         successSound();
-
 
         showRegisterStatus(
             `${name} cadastrado com sucesso!`,
             "success"
         );
 
-
         log(
             `Funcionário cadastrado: ${name}`
         );
-
 
         renderAdmin();
 
     }
 
-
     catch (error) {
 
         errorSound();
-
 
         showRegisterStatus(
             error.message,
@@ -3208,7 +2955,6 @@ async function registerEmployee() {
         );
 
     }
-
 
     finally {
 
@@ -3232,7 +2978,6 @@ function showRegisterStatus(
 
     registerStatus.className =
         "mt-4 p-3 rounded-xl text-sm";
-
 
     if (
         type === "success"
@@ -3265,10 +3010,8 @@ function showRegisterStatus(
 
     }
 
-
     registerStatus.textContent =
         message;
-
 
     registerStatus.classList.remove(
         "hidden"
@@ -3287,18 +3030,14 @@ function renderAdmin() {
     const employees =
         getEmployees();
 
-
     const records =
         getRecords();
-
 
     employeeCount.textContent =
         employees.length;
 
-
     employeeList.innerHTML =
         "";
-
 
     if (
         employees.length === 0
@@ -3330,7 +3069,6 @@ function renderAdmin() {
                         "div"
                     );
 
-
                 div.className = `
                     bg-slate-950
                     border
@@ -3341,7 +3079,6 @@ function renderAdmin() {
                     justify-between
                     items-center
                 `;
-
 
                 div.innerHTML = `
 
@@ -3370,7 +3107,6 @@ function renderAdmin() {
 
                     </div>
 
-
                     <button
                         class="
                             delete-employee
@@ -3386,14 +3122,12 @@ function renderAdmin() {
 
                 `;
 
-
                 employeeList.appendChild(
                     div
                 );
 
             }
         );
-
 
         document
             .querySelectorAll(
@@ -3416,16 +3150,13 @@ function renderAdmin() {
     }
 
 
-
     historyList.innerHTML =
         "";
-
 
     const reversed =
         records
             .slice()
             .reverse();
-
 
     if (
         reversed.length === 0
@@ -3457,7 +3188,6 @@ function renderAdmin() {
                         "div"
                     );
 
-
                 div.className = `
                     bg-slate-950
                     border
@@ -3467,7 +3197,6 @@ function renderAdmin() {
                     flex
                     justify-between
                 `;
-
 
                 div.innerHTML = `
 
@@ -3484,7 +3213,6 @@ function renderAdmin() {
                             )}
                         </div>
 
-
                         <div
                             class="
                                 text-[10px]
@@ -3497,7 +3225,6 @@ function renderAdmin() {
                         </div>
 
                     </div>
-
 
                     <div
                         class="
@@ -3517,7 +3244,6 @@ function renderAdmin() {
                             )}
                         </div>
 
-
                         <div
                             class="
                                 text-slate-400
@@ -3527,7 +3253,6 @@ function renderAdmin() {
                                 record.tipo
                             )}
                         </div>
-
 
                         <div
                             class="
@@ -3542,7 +3267,6 @@ function renderAdmin() {
                     </div>
 
                 `;
-
 
                 historyList.appendChild(
                     div
@@ -3568,14 +3292,12 @@ function deleteEmployee(
     const employees =
         getEmployees();
 
-
     const employee =
         employees.find(
             item =>
                 item.id ===
                 employeeId
         );
-
 
     if (
         !employee
@@ -3584,7 +3306,6 @@ function deleteEmployee(
         return;
 
     }
-
 
     if (
         !confirm(
@@ -3596,7 +3317,6 @@ function deleteEmployee(
 
     }
 
-
     saveEmployees(
         employees.filter(
             item =>
@@ -3605,14 +3325,11 @@ function deleteEmployee(
         )
     );
 
-
     renderAdmin();
-
 
     log(
         `Funcionário excluído: ${employee.name}`
     );
-
 
     errorSound();
 
@@ -3621,7 +3338,7 @@ function deleteEmployee(
 
 
 /* ============================================================
-   GERAR PDF
+   PDF
 ============================================================ */
 
 function createPDF() {
@@ -3630,10 +3347,8 @@ function createPDF() {
         jsPDF
     } = window.jspdf;
 
-
     const records =
         getRecords();
-
 
     if (
         records.length === 0
@@ -3643,24 +3358,19 @@ function createPDF() {
             "Não existem registros para gerar o PDF."
         );
 
-
         return null;
 
     }
 
-
     const doc =
         new jsPDF();
-
 
     const now =
         new Date();
 
-
     doc.setFontSize(
         20
     );
-
 
     doc.text(
         "PONTO FACIAL",
@@ -3668,11 +3378,9 @@ function createPDF() {
         20
     );
 
-
     doc.setFontSize(
         11
     );
-
 
     doc.text(
         "Relatório de Registro de Presença",
@@ -3680,18 +3388,15 @@ function createPDF() {
         28
     );
 
-
     doc.setFontSize(
         9
     );
-
 
     doc.text(
         `Gerado em: ${now.toLocaleString("pt-BR")}`,
         20,
         36
     );
-
 
     doc.line(
         20,
@@ -3700,11 +3405,9 @@ function createPDF() {
         41
     );
 
-
     doc.setFontSize(
         11
     );
-
 
     doc.text(
         `Total de registros: ${records.length}`,
@@ -3712,22 +3415,18 @@ function createPDF() {
         52
     );
 
-
     doc.text(
         `Funcionários: ${getEmployees().length}`,
         20,
         59
     );
 
-
     let y =
         72;
-
 
     doc.setFontSize(
         8
     );
-
 
     doc.text(
         "DATA",
@@ -3735,13 +3434,11 @@ function createPDF() {
         y
     );
 
-
     doc.text(
         "HORA",
         45,
         y
     );
-
 
     doc.text(
         "MATRÍCULA",
@@ -3749,13 +3446,11 @@ function createPDF() {
         y
     );
 
-
     doc.text(
         "FUNCIONÁRIO",
         95,
         y
     );
-
 
     doc.text(
         "TIPO",
@@ -3763,10 +3458,8 @@ function createPDF() {
         y
     );
 
-
     y +=
         6;
-
 
     doc.line(
         20,
@@ -3775,10 +3468,8 @@ function createPDF() {
         y
     );
 
-
     y +=
         7;
-
 
     records.forEach(
         record => {
@@ -3794,7 +3485,6 @@ function createPDF() {
 
             }
 
-
             doc.text(
                 String(
                     record.data
@@ -3803,7 +3493,6 @@ function createPDF() {
                 y
             );
 
-
             doc.text(
                 String(
                     record.hora
@@ -3811,7 +3500,6 @@ function createPDF() {
                 45,
                 y
             );
-
 
             doc.text(
                 String(
@@ -3824,7 +3512,6 @@ function createPDF() {
                 y
             );
 
-
             doc.text(
                 String(
                     record.funcionario_nome
@@ -3835,7 +3522,6 @@ function createPDF() {
                 95,
                 y
             );
-
 
             doc.text(
                 String(
@@ -3848,17 +3534,14 @@ function createPDF() {
                 y
             );
 
-
             y +=
                 7;
 
         }
     );
 
-
     const pages =
         doc.getNumberOfPages();
-
 
     for (
         let page = 1;
@@ -3870,11 +3553,9 @@ function createPDF() {
             page
         );
 
-
         doc.setFontSize(
             8
         );
-
 
         doc.text(
             `Página ${page} de ${pages}`,
@@ -3883,7 +3564,6 @@ function createPDF() {
         );
 
     }
-
 
     return doc;
 
@@ -3902,7 +3582,6 @@ btnPdf.addEventListener(
         const doc =
             createPDF();
 
-
         if (
             !doc
         ) {
@@ -3910,7 +3589,6 @@ btnPdf.addEventListener(
             return;
 
         }
-
 
         const filename =
             `ponto-facial-${new Date()
@@ -3920,11 +3598,9 @@ btnPdf.addEventListener(
                     10
                 )}.pdf`;
 
-
         doc.save(
             filename
         );
-
 
         successSound();
 
@@ -3934,7 +3610,7 @@ btnPdf.addEventListener(
 
 
 /* ============================================================
-   ENVIAR PDF
+   COMPARTILHAR PDF
 ============================================================ */
 
 btnSharePdf.addEventListener(
@@ -3944,7 +3620,6 @@ btnSharePdf.addEventListener(
         const doc =
             createPDF();
 
-
         if (
             !doc
         ) {
@@ -3953,12 +3628,10 @@ btnSharePdf.addEventListener(
 
         }
 
-
         const blob =
             doc.output(
                 "blob"
             );
-
 
         const filename =
             `ponto-facial-${new Date()
@@ -3967,7 +3640,6 @@ btnSharePdf.addEventListener(
                     0,
                     10
                 )}.pdf`;
-
 
         const file =
             new File(
@@ -3980,7 +3652,6 @@ btnSharePdf.addEventListener(
                         "application/pdf"
                 }
             );
-
 
         if (
             navigator.share &&
@@ -4008,9 +3679,7 @@ btnSharePdf.addEventListener(
 
                 });
 
-
                 successSound();
-
 
                 return;
 
@@ -4024,11 +3693,9 @@ btnSharePdf.addEventListener(
 
         }
 
-
         doc.save(
             filename
         );
-
 
         alert(
             "O navegador não permite compartilhamento direto. O PDF foi baixado."
@@ -4050,7 +3717,6 @@ btnExport.addEventListener(
         const records =
             getRecords();
 
-
         if (
             records.length === 0
         ) {
@@ -4059,11 +3725,9 @@ btnExport.addEventListener(
                 "Não existem registros."
             );
 
-
             return;
 
         }
-
 
         const header = [
 
@@ -4076,7 +3740,6 @@ btnExport.addEventListener(
             "Distancia"
 
         ];
-
 
         const rows =
             records.map(
@@ -4098,7 +3761,6 @@ btnExport.addEventListener(
 
                 ]
             );
-
 
         const csv =
             [
@@ -4124,7 +3786,6 @@ btnExport.addEventListener(
                 "\n"
             );
 
-
         const blob =
             new Blob(
                 [
@@ -4137,34 +3798,27 @@ btnExport.addEventListener(
                 }
             );
 
-
         const url =
             URL.createObjectURL(
                 blob
             );
-
 
         const link =
             document.createElement(
                 "a"
             );
 
-
         link.href =
             url;
-
 
         link.download =
             "pontos-faciais.csv";
 
-
         link.click();
-
 
         URL.revokeObjectURL(
             url
         );
-
 
         successSound();
 
@@ -4174,7 +3828,7 @@ btnExport.addEventListener(
 
 
 /* ============================================================
-   APAGAR
+   APAGAR DADOS
 ============================================================ */
 
 btnClear.addEventListener(
@@ -4191,22 +3845,17 @@ btnClear.addEventListener(
 
         }
 
-
         localStorage.removeItem(
             EMPLOYEE_STORAGE
         );
-
 
         localStorage.removeItem(
             RECORD_STORAGE
         );
 
-
         renderAdmin();
 
-
         successSound();
-
 
         showStatus(
             "Todos os dados foram apagados.",
@@ -4255,7 +3904,7 @@ function escapeHtml(
 
 
 /* ============================================================
-   MONITORAMENTO DO ROSTO
+   MONITORAMENTO
 ============================================================ */
 
 let lastCheck =
@@ -4274,15 +3923,12 @@ async function monitorFace() {
             monitorFace
         );
 
-
         return;
 
     }
 
-
     const now =
         Date.now();
-
 
     if (
         now -
@@ -4294,21 +3940,17 @@ async function monitorFace() {
             monitorFace
         );
 
-
         return;
 
     }
 
-
     lastCheck =
         now;
-
 
     try {
 
         const detection =
             await detectFace();
-
 
         if (
             detection
@@ -4316,7 +3958,6 @@ async function monitorFace() {
 
             faceIndicator.textContent =
                 "ROSTO DETECTADO ✓";
-
 
             faceIndicator.className = `
                 absolute
@@ -4339,7 +3980,6 @@ async function monitorFace() {
 
             faceIndicator.textContent =
                 "PROCURANDO ROSTO";
-
 
             faceIndicator.className = `
                 absolute
@@ -4364,7 +4004,6 @@ async function monitorFace() {
 
     }
 
-
     requestAnimationFrame(
         monitorFace
     );
@@ -4383,7 +4022,6 @@ async function initialize() {
         "Iniciando sistema..."
     );
 
-
     await Promise.all([
 
         startCamera(),
@@ -4392,18 +4030,15 @@ async function initialize() {
 
     ]);
 
-
     requestAnimationFrame(
         monitorFace
     );
-
 
     log(
         "Sistema pronto."
     );
 
 }
-
 
 
 window.addEventListener(
