@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: facecan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: facecan
+      POSTGRES_USER: facecan
+      POSTGRES_PASSWORD: change-this-password
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - facecan_pg:/var/lib/postgresql/data
+
+volumes:
+  facecan_pg:

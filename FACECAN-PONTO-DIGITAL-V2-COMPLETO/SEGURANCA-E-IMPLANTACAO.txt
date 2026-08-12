@@ -1,0 +1,31 @@
+FACECAN PONTO DIGITAL V2
+=========================
+
+IMPORTANTE:
+Esta entrega e uma base funcional e segura para desenvolvimento/homologacao.
+Nenhum software pode garantir "seguranca total". Antes de usar dados reais,
+a empresa deve executar hardening, testes de seguranca, LGPD, backups,
+monitoramento e validacao da integracao pela equipe de TI.
+
+PRIMEIRO USO NO WINDOWS:
+1. Abra esta pasta no VS Code.
+2. Rode INICIAR-FACECAN.bat ou:
+   npm install
+   Copy-Item .env.example .env.local
+   npm run dev
+3. Abra http://localhost:3000
+4. Area administrativa: http://localhost:3000/admin
+
+CREDENCIAIS DE DESENVOLVIMENTO:
+ADMIN_EMAIL=admin@empresa.local
+ADMIN_PASSWORD=change-this-before-production
+
+ALTERE IMEDIATAMENTE ANTES DE PRODUCAO.
+
+REGRAS:
+MANHA: entrada 06:00-11:00 / intervalo 12:00-13:30 / saida 17:00-18:00
+NOITE: entrada 18:00-22:00 / saida 01:20-07:00 (virada de dia)
+
+A integracao AWS/News Systems/Oracle precisa do contrato e layout oficial
+do ambiente da empresa. O projeto inclui adaptadores e schema de producao,
+mas nao inventa endpoints ou formatos que o fornecedor ainda nao informou.
